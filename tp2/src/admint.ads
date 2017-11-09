@@ -5,9 +5,10 @@ with AbstractPressureSensor; use AbstractPressureSensor;
 
 package AdmInt is
    type T_AdmInt is new T_PressureObserver with private;
+   type T_AdmInt_Access is access all T_AdmInt'Class;
    
    overriding procedure handleNewPressure(this: access T_AdmInt; 
-                                          sensor: access T_AbstractPressureSensor
+                                          sensor: access T_AbstractPressureSensor'Class
                                          );
    
    function ID_Hashed (id: T_AbstractPressureSensor_Access) return Hash_Type;

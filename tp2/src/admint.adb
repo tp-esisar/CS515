@@ -1,16 +1,19 @@
 with AdmInt; use AdmInt.SensorMap;
+with System; use System;
+with System.Storage_Elements;
 
 package body AdmInt is
 
    overriding procedure handleNewPressure
      (this: access T_AdmInt;
-      sensor: access T_AbstractPressureSensor)
+      sensor: access T_AbstractPressureSensor'Class)
    is
    begin
       if this.listeCapteur.Find(sensor) = No_Element
-      	then null; --this.listeCapteur.Insert(sensor, sensor.getMeasure);
-      	else null; --this.listeCapteur.Replace(sensor, sensor.getMeasure);
+      	then this.listeCapteur.Insert(sensor, sensor.getMeasure);
+      	else this.listeCapteur.Replace(sensor, sensor.getMeasure);
       end if;
+
    end handleNewPressure;
 
    function ID_Hashed
@@ -18,8 +21,7 @@ package body AdmInt is
       return Hash_Type
    is
    begin
-      raise Program_Error with "Unimplemented function ID_Hashed";
-      return ID_Hashed (id => id);
+      return Hash_Type(System.Storage_Elements.To_Integer(id'Address));
    end ID_Hashed;
 
 end AdmInt;
