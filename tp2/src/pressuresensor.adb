@@ -1,20 +1,10 @@
 with AbstractPressureSensor; use AbstractPressureSensor.ObserverContainer;
 with PressureObserver; use PressureObserver;
+
 package body PressureSensor is
 
-   -----------------
-   -- Constructor --
-   -----------------
-
    package body Constructor is
-
-      ----------------
-      -- Initialize --
-      ----------------
-
-      function Initialize
-        (status: in Boolean;
-         pressure: in Float)
+      function Initialize (status: in Boolean; pressure: in Float)
          return T_PressureSensor_Access
       is
          Temp_Ptr : T_PressureSensor_Access;
@@ -24,13 +14,7 @@ package body PressureSensor is
          Temp_Ptr.measure.pressure := pressure;
          return Temp_Ptr;
       end Initialize;
-
    end Constructor;
-
-
-   -------------------
-   -- simuleMeasure --
-   -------------------
 
    overriding procedure simuleMeasure
      (this: access T_PressureSensor;
@@ -48,12 +32,10 @@ package body PressureSensor is
       end loop;
    end simuleMeasure;
 
-
    overriding function getMeasure(this: access T_PressureSensor) return T_Measure
    is
    begin
       return this.measure;
    end getMeasure;
-
 
 end PressureSensor;

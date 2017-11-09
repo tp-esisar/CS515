@@ -9,10 +9,10 @@ package AdmExt is
    
    package Constructor is
       function Initialize(status: in Boolean; 
-                          pressure: in Float) return T_AdmExt_Access;
+                          pressure: in Float) 
+                          return T_AdmExt_Access;
    end;
      
-      
    overriding procedure simuleMeasure(this: access T_AdmExt; 
                                       pressure: in Float; 
                                       status: in Boolean);
@@ -20,10 +20,8 @@ package AdmExt is
    overriding function getMeasure(this: access T_AdmExt) return T_Measure;
    
 private
-
    type T_AdmExt is new T_AbstractPressureSensor with record
       measure: T_Measure;
    end record;
-   
    
 end AdmExt;

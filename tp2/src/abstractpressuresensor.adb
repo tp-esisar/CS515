@@ -1,9 +1,5 @@
 package body AbstractPressureSensor is
 
-   --------------------
-   -- recordObserver --
-   --------------------
-
    procedure recordObserver
      (this: access T_AbstractPressureSensor;
       observer: access T_PressureObserver'Class)
@@ -12,7 +8,5 @@ package body AbstractPressureSensor is
       this.observers.Append(observer);
       observer.handleNewPressure(this);
    end recordObserver;
-
-
 
 end AbstractPressureSensor;

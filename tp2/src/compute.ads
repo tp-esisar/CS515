@@ -1,7 +1,5 @@
 package Compute is
    
-   type T_Compute is null record;
-    
    function computeAltitude(pression: in Float) return Float
      with pre => pression > 0.0 and pression <= p0,
      post => computeAltitude'Result >= 0.0;
