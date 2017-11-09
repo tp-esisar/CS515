@@ -15,7 +15,9 @@ package body Traitement is
    begin
       loop
          exit when item = No_Element;
-         if Element(item).status and Element(item).pressure>0.0 and Element(item).pressure <= Float(Compute.p0)
+         if Element(item).status and 
+           Element(item).pressure>0.0 and 
+           Element(item).pressure <= Float(Compute.p0)
          then 
             compteur := compteur + 1;
             somme := somme + Element(item).pressure;
@@ -26,6 +28,7 @@ package body Traitement is
       if compteur /= 0
       then resultat.pressure := somme/Float(compteur);
       end if;
+      
       return resultat;
    end Moyenne;
 
