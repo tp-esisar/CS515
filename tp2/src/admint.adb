@@ -7,9 +7,9 @@ package body AdmInt is
       sensor: access T_AbstractPressureSensor)
    is
    begin
-      if Find(this.listeCapteur, sensor) = No_Element
-      	then Insert(this.listeCapteur, sensor, sensor.getMeasure);
-      	else Replace(this.listeCapteur, sensor, sensor.getMeasure);
+      if this.listeCapteur.Find(sensor) = No_Element
+      	then null; --this.listeCapteur.Insert(sensor, sensor.getMeasure);
+      	else null; --this.listeCapteur.Replace(sensor, sensor.getMeasure);
       end if;
    end handleNewPressure;
 
