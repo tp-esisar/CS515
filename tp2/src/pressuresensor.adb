@@ -1,4 +1,5 @@
 with AbstractPressureSensor; use AbstractPressureSensor.ObserverContainer;
+with PressureObserver; use PressureObserver;
 package body PressureSensor is
 
    -----------------
@@ -42,9 +43,8 @@ package body PressureSensor is
       this.measure.status := status;
       loop
          exit when C = No_Element;
-         -- Element(C).handleNewPressure(T_AbstractPressureSensor_Access(this));
-         PressureObserver.handleNewPressure(Element(C),T_AbstractPressureSensor_Access(this));
-         C := this.observers.Next(C);
+         Element(C).handleNewPressure(T_AbstractPressureSensor_Access(this));
+         ObserverContainer.Next(C);
       end loop;
    end simuleMeasure;
 
