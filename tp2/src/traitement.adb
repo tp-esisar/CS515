@@ -16,7 +16,7 @@ package body Traitement is
          exit when item = No_Element;
          if Element(item).status and 
            Element(item).pressure>0.0 and 
-           Element(item).pressure <= Float(Compute.p0)
+           Element(item).pressure <= Compute.p0
          then 
             compteur := compteur + 1;
             somme := somme + Element(item).pressure;
