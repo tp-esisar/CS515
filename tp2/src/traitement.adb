@@ -4,8 +4,7 @@ with Measure; use Measure;
 
 package body Traitement is
 
-   function Moyenne(this: access T_Traitement; 
-                    liste: access AdmInt.SensorMap.Map) 
+   function Moyenne(liste: access AdmInt.SensorMap.Map) 
                     return T_Measure 
    is
       item : Cursor := liste.First;
