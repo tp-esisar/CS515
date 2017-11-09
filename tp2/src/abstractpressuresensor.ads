@@ -19,7 +19,7 @@ package AbstractPressureSensor is
                            pressure: in Float; 
                            status: in Boolean) is abstract;
    procedure recordObserver(this: access T_AbstractPressureSensor;
-                            observer: access T_PressureObserver);
+                            observer: access T_PressureObserver'Class);
    
    function getMeasure(this: access T_AbstractPressureSensor) return T_Measure is abstract;
    

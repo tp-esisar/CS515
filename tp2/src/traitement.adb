@@ -1,28 +1,35 @@
 with AdmInt; use AdmInt.SensorMap;
+with Compute; use Compute;
+with Measure; use Measure;
 
 package body Traitement is
 
-   function Moyenne(this: access T_Traitement; 
-                    liste: access AdmInt.SensorsMap.Map) 
-                    return Float is
+   function Moyenne(liste: in AdmInt.SensorMap.Map) 
+                    return T_Measure 
+   is
       item : Cursor := liste.First;
+      compteur : Natural := 0;
+      somme : Float := 0.0;
+      resultat : T_Measure;
    begin
       loop
          exit when item = No_Element;
-         if not(Element(item).status and Element(item).pressure>0 and Element(item).pressure <= 101315)
-         	then Element(item).status := false;
+         if Element(item).status and 
+           Element(item).pressure>0.0 and 
+           Element(item).pressure <= Float(Compute.p0)
+         then 
+            compteur := compteur + 1;
+            somme := somme + Element(item).pressure;
          end if;
-         
-         
-         if Element(C).Stock < Low then
-            -- print a message perhaps
-            Put("Low stock of part ");
-            Put_Line(Key(C).Part_Number);
-         end if;
-         C := The_Store.Next(C);
+         Next(item);
       end loop;
-      while Has_Element(item)
-      return R*Float(T0)*Math.Log(Float(p0)*pression)/(M*g);
-   end computeAltitude;
+                  
+      resultat.status := compteur/=0;
+      if compteur /= 0
+      then resultat.pressure := somme/Float(compteur);
+      end if;
+      
+      return resultat;
+   end Moyenne;
 
 end Traitement;
