@@ -1,3 +1,4 @@
+with AbstractPressureSensor; use AbstractPressureSensor.ObserverContainer;
 package body PressureSensor is
 
    -----------------
@@ -25,6 +26,7 @@ package body PressureSensor is
 
    end Constructor;
 
+
    -------------------
    -- simuleMeasure --
    -------------------
@@ -34,13 +36,16 @@ package body PressureSensor is
       pressure: in Float;
       status: in Boolean)
    is
+      C: Cursor := this.observers.First;
    begin
       this.measure.pressure := pressure;
       this.measure.status := status;
-      for I in this.observers'Range loop
-         this.observers(I).handleNewPressure(T_AbstractPressureSensor_Access(this));
+      loop
+         exit when C = No_Element;
+         -- Element(C).handleNewPressure(T_AbstractPressureSensor_Access(this));
+         PressureObserver.handleNewPressure(Element(C),T_AbstractPressureSensor_Access(this));
+         C := this.observers.Next(C);
       end loop;
-
    end simuleMeasure;
 
 
