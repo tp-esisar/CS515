@@ -16,10 +16,8 @@ package body PressureSensor is
       end Initialize;
    end Constructor;
 
-   overriding procedure simuleMeasure
-     (this: access T_PressureSensor;
-      pressure: in Float;
-      status: in Boolean)
+   overriding procedure simuleMeasure(this: access T_PressureSensor;
+                                      measure: in Measure)
    is
       C: Cursor := this.observers.First;
    begin

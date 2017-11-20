@@ -15,9 +15,8 @@ package body AdmExt is
       end Initialize;
    end Constructor;
 
-   overriding procedure simuleMeasure (this: access T_AdmExt;
-                                       pressure: in Float;
-                                       status: in Boolean)
+   overriding procedure simuleMeasure(this: access T_AdmExt;
+                                      measure: in Measure)
    is
       C: Cursor := this.observers.First;
    begin

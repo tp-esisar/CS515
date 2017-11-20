@@ -2,7 +2,8 @@ package Measure is
 
    type T_Measure is record 
       status: Boolean;
-      pressure: Float;
+      totalPressure: Float;
+      staticPressure: Float;
    end record;
 
 end measure;

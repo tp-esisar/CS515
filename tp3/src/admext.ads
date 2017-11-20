@@ -14,8 +14,7 @@ package AdmExt is
    end;
      
    overriding procedure simuleMeasure(this: access T_AdmExt; 
-                                      pressure: in Float; 
-                                      status: in Boolean);
+                                      measure: in Measure);
    
    overriding function getMeasure(this: access T_AdmExt) return T_Measure;
    

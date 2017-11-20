@@ -13,8 +13,7 @@ package PressureSensor is
    end;
       
    overriding procedure simuleMeasure(this: access T_PressureSensor; 
-                                      pressure: in Float; 
-                                      status: in Boolean);
+                                      measure: in T_Measure);
    overriding function getMeasure(this: access T_PressureSensor) return T_Measure;
    
 private

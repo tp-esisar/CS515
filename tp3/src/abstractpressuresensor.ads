@@ -12,8 +12,7 @@ package AbstractPressureSensor is
    type T_AbstractPressureSensor_Access is access all T_AbstractPressureSensor'Class;
    
    procedure simuleMeasure(this: access T_AbstractPressureSensor; 
-                           pressure: in Float;
-                           status: in Boolean) is abstract;
+                           measure: in T_Measure) is abstract;
 
    procedure recordObserver(this: access T_AbstractPressureSensor;
                             observer: access T_PressureObserver'Class);
