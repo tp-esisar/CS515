@@ -14,7 +14,7 @@ package AdmExt is
    end;
      
    overriding procedure simuleMeasure(this: access T_AdmExt; 
-                                      measure: in Measure);
+                                      measure: in T_Measure);
    
    overriding function getMeasure(this: access T_AdmExt) return T_Measure;
    

@@ -23,7 +23,7 @@ package body AdmInt is
       resultat := Moyenne(this.listeCapteur);
       if resultat.status
       then
-         Put_Line("Altitude : " & Float'image(computeAltitude(resultat.pressure)));
+         Put_Line("Altitude : " & Float'image(this.altitudeCalc.computeAltitude(resultat)));
       else
          Put_Line("Altitude : KO");
       end if;
@@ -38,5 +38,20 @@ package body AdmInt is
       -- Put_Line("hash: " & System.Address_Image(id.all'Address));
       return Ada.Strings.Hash(System.Address_Image(id.all'Address));
    end ID_Hashed;
+
+   package Constructor is
+      function Initialize(a: access T_AbstractAltitude;
+                          s: access T_AbstractSpeed;
+                          f: access T_AbstractFilter)
+                          return T_AdmInt_Access is
+      Temp_Ptr : T_AdmInt_Access;
+      begin
+         Temp_Ptr := new T_AdmInt;
+         Temp_Ptr.altitudeCalc := a;
+         Temp_Ptr.speedCalc := s;
+         Temp_Ptr.filterCalc := f;
+         return Temp_Ptr;
+      end Initialize;
+   end;
 
 end AdmInt;
