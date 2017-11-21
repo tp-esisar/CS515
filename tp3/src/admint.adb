@@ -15,18 +15,31 @@ package body AdmInt is
      (this: access T_AdmInt;
       sensor: access T_AbstractPressureSensor'Class)
    is
-      resultat: T_Measure;
+      meanPressure: T_Measure;
+      altitude: Float;
+      filteredPressure: T_Measure;
    begin
       if this.listeCapteur.Find(sensor) = No_Element
       	then this.listeCapteur.Insert(sensor, sensor.getMeasure);
       	else this.listeCapteur.Replace(sensor, sensor.getMeasure);
       end if;
-      resultat := Moyenne(this.listeCapteur);
-      if resultat.status
+      meanPressure := Moyenne(this.listeCapteur);
+      if meanPressure.status
       then
-         Put_Line("Altitude : " & Float'image(this.altitudeCalc.compute(resultat)));
+         altitude := this.altitudeCalc.compute(meanPressure);
+         filteredPressure.status := meanPressure.status;
+         filteredPressure.totalPressure := this.totalFilterCalc.filter(meanPressure.totalPressure);
+         filteredPressure.staticPressure := this.staticFilterCalc.filter(meanPressure.staticPressure);
+         if this.savedSpeed <= 100.0
+         then
+            this.savedSpeed := this.lowSpeedCalc.computeSpeed(filteredPressure);
+         else
+            this.savedSpeed := this.highSpeedCalc.computeSpeed(filteredPressure);
+         end if;
+
+         Put_Line("Altitude : " & Float'image(altitude) & ", Speed : " & Float'Image(this.savedSpeed));
       else
-         Put_Line("Altitude : KO");
+         Put_Line("Altitude : KO, Speed : " & Float'Image(this.savedSpeed));
       end if;
 
    end handleNewPressure;
@@ -41,18 +54,22 @@ package body AdmInt is
    end ID_Hashed;
 
    package body Constructor is
-      function Initialize
-        (a: access T_AbstractAltitude'Class)
-                          --s: access T_AbstractSpeed;
-                          --f: access T_AbstractFilter)
-         return T_AdmInt_Access
+      function Initialize(a: access T_AbstractAltitude'Class;
+                          ls: access T_AbstractSpeed'Class;
+                          hs: access T_AbstractSpeed'Class;
+                          sf: access T_AbstractFilter'Class;
+                          tf: access T_AbstractFilter'Class)
+                          return T_AdmInt_Access
       is
          Temp_Ptr: T_AdmInt_Access;
       begin
          Temp_Ptr := new T_AdmInt;
          Temp_Ptr.altitudeCalc := a;
---           Temp_Ptr.speedCalc := s;
---           Temp_Ptr.filterCalc := f;
+         Temp_Ptr.lowSpeedCalc := ls;
+         Temp_Ptr.highSpeedCalc := hs;
+         Temp_Ptr.staticFilterCalc := sf;
+         Temp_Ptr.totalFilterCalc := tf;
+         Temp_Ptr.savedSpeed := 0.0;
          return Temp_Ptr;
       end Initialize;
    end Constructor;

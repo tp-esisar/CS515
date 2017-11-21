@@ -6,7 +6,13 @@ package body filterBoeing is
       return Float
    is
    begin
-      this.oldValue = (this.oldValue = 0.0 ? pressure : (pressure + this.oldValue)/2.0);
+      if this.oldValue = 0.0
+      then
+         this.oldValue := pressure;
+      else
+         this.oldValue := (pressure + this.oldValue)/2.0;
+      end if;
+
       return this.oldValue;
    end filter;
 

@@ -6,7 +6,7 @@ package body SpeedIncompressible is
       return Float
    is
    begin
-      return (2*(measure.totalPressure-measure.staticPressure)/rho)**0.5;
+      return 1.0; --(2.0*(measure.totalPressure-measure.staticPressure)/rho)**0.5;
    end computeSpeed;
 
 end SpeedIncompressible;

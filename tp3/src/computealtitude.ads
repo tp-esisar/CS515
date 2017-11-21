@@ -8,9 +8,6 @@ package ComputeAltitude is
    overriding function compute(this: access T_ComputeAltitude;
                                measure: in T_Measure) return Float;
    
-   package Constructor is
-      function Initialize(trash: in Integer) return T_ComputeAltitude_Access;
-   end;
    
    g : constant Float := 9.807;
    p0 : constant Float := 101315.0;

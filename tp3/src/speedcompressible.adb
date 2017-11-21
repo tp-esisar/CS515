@@ -1,3 +1,4 @@
+
 package body speedCompressible is
 
    overriding function computeSpeed
@@ -6,7 +7,7 @@ package body speedCompressible is
       return Float
    is
    begin
-      return (((2/(gamma-1))*(((measure.totalPressure/measure.staticPressure)**((gamma-1)/gamma))-1))**0.5)*vs;
+      return 1.0; --(((2.0/(gamma-1.0))*(((measure.totalPressure/measure.staticPressure)**((gamma-1.0)/gamma))-1.0))**0.5)*vs;
    end computeSpeed;
 
 end speedCompressible;

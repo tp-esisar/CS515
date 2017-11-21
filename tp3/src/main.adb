@@ -6,19 +6,38 @@ with AdmInt; use AdmInt;
 with PressureObserver; use PressureObserver;
 with AbstractAltitude; use AbstractAltitude;
 with ComputeAltitude; use ComputeAltitude;
+with SpeedIncompressible; use SpeedIncompressible;
+with AbstractSpeed; use AbstractSpeed;
+with SpeedCompressible; use SpeedCompressible;
+with filterBoeing; use filterBoeing;
+with AbstractFilter; use AbstractFilter;
 
 procedure Main is
    sensor1: T_AbstractPressureSensor_Access;
    sensor2: T_AbstractPressureSensor_Access;
 
-   altitude: T_AbstractAltitude_Access;
+   altitudeCalc: T_AbstractAltitude_Access;
+   lowSpeedCalc: T_AbstractSpeed_Access;
+   highSpeedCalc: T_AbstractSpeed_Access;
+   staticFilter: T_AbstractFilter_Access;
+   totalFilter: T_AbstractFilter_Access;
    adm1: T_AdmInt_Access;
 begin
    put_line("----- Init -----");
    sensor1 := new T_PressureSensor;
    sensor2 := new T_AdmExt;
-   altitude := T_AbstractAltitude_Access(ComputeAltitude.Constructor.Initialize(42));
-   adm1 := AdmInt.Constructor.Initialize(altitude);
+   altitudeCalc := new T_ComputeAltitude;
+   lowSpeedCalc := new T_SpeedIncompressible;
+   highSpeedCalc := new T_SpeedCompressible;
+   staticFilter := new T_FilterBoeing;
+   totalFilter := new T_FilterBoeing;
+
+   adm1 := AdmInt.Constructor.Initialize(altitudeCalc,
+                                         lowSpeedCalc,
+                                         highSpeedCalc,
+                                         staticFilter,
+                                         totalFilter
+                                        );
 
    put_line("Test 1 avec 1 sensor (OK, 42.42)");
    sensor1.recordObserver(T_PressureObserver_Access(adm1));
