@@ -5,7 +5,7 @@ package filterBoeing is
    type T_FilterBoeing is new T_AbstractFilter with private;
    type T_FilterBoeing_Access is access all T_FilterBoeing'Class;
    
-   function filter(this: access T_FilterBoeing;
+   overriding function filter(this: access T_FilterBoeing;
                    pressure: in Float) return Float;
    
 private

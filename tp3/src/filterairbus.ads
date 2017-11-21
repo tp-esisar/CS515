@@ -9,7 +9,7 @@ package FilterAirbus is
       function Initialize(a: in Float) return T_FilterAirbus_Access;
    end;
    
-   function filter(this: access T_FilterAirbus;
+   overriding function filter(this: access T_FilterAirbus;
                    pressure: in Float) return Float;
    
    private
