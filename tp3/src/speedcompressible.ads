@@ -1,7 +1,7 @@
 with AbstractSpeed; use AbstractSpeed;
 with Measure; use Measure;
 
-package speedCompressible is
+package SpeedCompressible is
 
    type T_SpeedCompressible is new T_AbstractSpeed with null record;
    type T_SpeedCompressible_Access is access all T_SpeedCompressible'Class;
@@ -13,4 +13,4 @@ package speedCompressible is
    gamma : constant Float := 7.0/5.0;
    vs : constant Float := 335.0;
 
-end speedCompressible;
+end SpeedCompressible;
