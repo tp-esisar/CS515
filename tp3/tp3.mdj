@@ -6707,7 +6707,7 @@
 											"lineColor": "#000000",
 											"fillColor": "#ffffff",
 											"fontColor": "#000000",
-											"font": "Arial;13;0",
+											"font": "Arial;13;2",
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
@@ -6717,7 +6717,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "ComputeSpeed(measure: Measure)",
+											"text": "compute(measure: Measure)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -10801,7 +10801,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFf2GZBn87eNcA="
 							},
-							"name": "ComputeSpeed",
+							"name": "compute",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -10827,7 +10827,7 @@
 							],
 							"concurrency": "sequential",
 							"isQuery": false,
-							"isAbstract": false
+							"isAbstract": true
 						}
 					],
 					"isAbstract": true,
