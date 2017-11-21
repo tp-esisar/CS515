@@ -6,7 +6,6 @@ package body AbstractPressureSensor is
    is
    begin
       this.observers.Append(observer);
-      observer.handleNewPressure(this);
    end recordObserver;
 
 end AbstractPressureSensor;

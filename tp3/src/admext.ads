@@ -6,16 +6,10 @@ package AdmExt is
 
    type T_AdmExt is new T_AbstractPressureSensor with private;
    type T_AdmExt_Access is access all T_AdmExt'Class;
-   
-   package Constructor is
-      function Initialize(status: in Boolean; 
-                          pressure: in Float) 
-                          return T_AdmExt_Access;
-   end;
      
    overriding procedure simuleMeasure(this: access T_AdmExt; 
                                       measure: in T_Measure);
-   
+
    overriding function getMeasure(this: access T_AdmExt) return T_Measure;
    
 private

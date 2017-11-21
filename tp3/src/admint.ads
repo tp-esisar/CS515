@@ -33,7 +33,7 @@ package AdmInt is
 private
    type T_AdmInt is new T_PressureObserver with record
       listeCapteur: SensorMap.Map;
-      altitudeCalc: T_AbstractAltitude_Access;
+      altitudeCalc: access T_AbstractAltitude'Class;
 --        speedCalc: T_AbstractSpeed_Access;
 --        staticFilterCalc: T_AbstractFilter_Access;
 --        totalFilterCalc: T_AbstractFilter_Access;

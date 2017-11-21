@@ -15,7 +15,7 @@ package body ComputeAltitude is
          return T_ComputeAltitude_Access
       is
       begin
-         return new T_ComputeAltitude;;
+         return new T_ComputeAltitude;
       end Initialize;
    end Constructor;
 

@@ -6,5 +6,4 @@ package AbstractFilter is
    function filter(this: access T_AbstractFilter;
                    pressure: in Float) return Float is abstract;
    
-
 end AbstractFilter;

@@ -15,16 +15,16 @@ procedure Main is
    adm1: T_AdmInt_Access;
 begin
    put_line("----- Init -----");
-   sensor1 := T_AbstractPressureSensor_Access(PressureSensor.Constructor.Initialize(true, 42.42));
-   sensor2 := T_AbstractPressureSensor_Access(AdmExt.Constructor.Initialize(true, 79.2));
+   sensor1 := new T_PressureSensor;
+   sensor2 := new T_AdmExt;
    altitude := T_AbstractAltitude_Access(ComputeAltitude.Constructor.Initialize(42));
    adm1 := AdmInt.Constructor.Initialize(altitude);
 
---     put_line("Test 1 avec 1 sensor (OK, 42.42)");
---     sensor1.recordObserver(T_PressureObserver_Access(adm1));
---
---     put_line("Test 2 avec 1 sensor (OK, 80.4)");
---     sensor1.simuleMeasure(80.4, true);
+   put_line("Test 1 avec 1 sensor (OK, 42.42)");
+   sensor1.recordObserver(T_PressureObserver_Access(adm1));
+   sensor1.simuleMeasure((true,1.0,42.42));
+   put_line("Test 2 avec 1 sensor (OK, 80.4)");
+   sensor1.simuleMeasure((true,1.0,80.4));
 --
 --     put_line("Test 3 avec 1 sensor (KO, 80.4)");
 --     sensor1.simuleMeasure(80.4, false);
