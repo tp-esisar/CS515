@@ -16,7 +16,6 @@ package body AdmInt is
       sensor: access T_AbstractPressureSensor'Class)
    is
       meanPressure: T_Measure;
-      altitude: Float;
       filteredPressure: T_Measure;
    begin
       if this.listeCapteur.Find(sensor) = No_Element
@@ -26,7 +25,7 @@ package body AdmInt is
       meanPressure := Moyenne(this.listeCapteur);
       if meanPressure.status
       then
-         altitude := this.altitudeCalc.compute(meanPressure);
+         this.savedAltitude := this.altitudeCalc.compute(meanPressure);
          filteredPressure.status := meanPressure.status;
          filteredPressure.totalPressure := this.totalFilterCalc.filter(meanPressure.totalPressure);
          filteredPressure.staticPressure := this.staticFilterCalc.filter(meanPressure.staticPressure);
@@ -37,9 +36,9 @@ package body AdmInt is
             this.savedSpeed := this.highSpeedCalc.computeSpeed(filteredPressure);
          end if;
 
-         Put_Line("Altitude : " & Float'image(altitude) & ", Speed : " & Float'Image(this.savedSpeed));
+         --Put_Line("Altitude : " & Float'image(this.savedAltitude) & ", Speed : " & Float'Image(this.savedSpeed));
       else
-         Put_Line("Altitude : KO, Speed : " & Float'Image(this.savedSpeed));
+         this.savedAltitude := -1.0;
       end if;
 
    end handleNewPressure;
@@ -52,6 +51,22 @@ package body AdmInt is
       -- Put_Line("hash: " & System.Address_Image(id.all'Address));
       return Ada.Strings.Hash(System.Address_Image(id.all'Address));
    end ID_Hashed;
+
+   function getAltitude
+     (this: access T_AdmInt)
+      return Float
+   is
+   begin
+      return this.savedAltitude;
+   end;
+
+   function getSpeed
+     (this: access T_AdmInt)
+      return Float
+   is
+   begin
+      return this.savedSpeed;
+   end;
 
    package body Constructor is
       function Initialize(a: access T_AbstractAltitude'Class;
@@ -70,6 +85,7 @@ package body AdmInt is
          Temp_Ptr.staticFilterCalc := sf;
          Temp_Ptr.totalFilterCalc := tf;
          Temp_Ptr.savedSpeed := 0.0;
+         Temp_Ptr.savedAltitude := 0.0;
          return Temp_Ptr;
       end Initialize;
    end Constructor;

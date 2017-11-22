@@ -13,6 +13,8 @@ package AdmInt is
    overriding procedure handleNewPressure(this: access T_AdmInt; 
                                           sensor: access T_AbstractPressureSensor'Class
                                          );
+   function getAltitude (this: access T_AdmInt) return Float;
+   function getSpeed (this: access T_AdmInt) return Float;
    
    function ID_Hashed (id: T_AbstractPressureSensor_Access) return Hash_Type;
 
@@ -41,6 +43,7 @@ private
       staticFilterCalc: access T_AbstractFilter'Class;
       totalFilterCalc: access T_AbstractFilter'Class;
       savedSpeed: Float;
+      savedAltitude: Float;
    end record;
 
 end AdmInt;
