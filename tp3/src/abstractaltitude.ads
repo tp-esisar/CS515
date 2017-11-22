@@ -7,5 +7,4 @@ package AbstractAltitude is
    function compute(this: access T_AbstractAltitude;
                             measure: in T_Measure) return Float is abstract;
    
-
 end AbstractAltitude;

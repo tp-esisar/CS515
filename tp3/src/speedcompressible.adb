@@ -1,3 +1,4 @@
+with Ada.Numerics.Generic_Elementary_Functions;
 
 package body speedCompressible is
 
@@ -6,8 +7,11 @@ package body speedCompressible is
       measure: in T_Measure)
       return Float
    is
+      package Math is new Ada.Numerics.Generic_Elementary_Functions(Float);
    begin
-      return 1.0; --(((2.0/(gamma-1.0))*(((measure.totalPressure/measure.staticPressure)**((gamma-1.0)/gamma))-1.0))**0.5)*vs;
+      return Math.Sqrt((2.0/(gamma-1.0))*
+                       (Math."**"((measure.totalPressure/measure.staticPressure),
+                          ((gamma-1.0)/gamma))-1.0))*vs;
    end computeSpeed;
 
 end speedCompressible;

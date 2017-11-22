@@ -9,6 +9,5 @@ package body ComputeAltitude is
    begin
       return R*Float(T0)*Math.Log(p0/measure.staticPressure)/(M*g);
    end compute;
-   
-
+  
 end ComputeAltitude;

@@ -11,9 +11,7 @@ package body FilterAirbus is
       end Initialize;
    end Constructor;
 
-   function filter
-     (this: access T_FilterAirbus;
-      pressure: in Float)
+   function filter (this: access T_FilterAirbus; pressure: in Float)
       return Float
    is
    begin
