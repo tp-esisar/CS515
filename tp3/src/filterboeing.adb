@@ -1,3 +1,5 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
 package body filterBoeing is
 
    function filter
@@ -5,15 +7,17 @@ package body filterBoeing is
       pressure: in Float)
       return Float
    is
+      result: Float;
    begin
-      if this.oldValue = 0.0
+      if this.oldValue < 0.0
       then
-         this.oldValue := pressure;
+         result := pressure;
       else
-         this.oldValue := (pressure + this.oldValue)/2.0;
+         result := (pressure + this.oldValue)/2.0;
       end if;
+      this.oldValue := pressure;
+      return result;
 
-      return this.oldValue;
    end filter;
 
 end filterBoeing;

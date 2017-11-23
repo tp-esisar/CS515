@@ -10,7 +10,7 @@ package filterBoeing is
    
 private
    type T_FilterBoeing is new T_AbstractFilter with record
-      oldValue: Float := 0.0;
+      oldValue: Float := -42.0;
    end record;
 
 end filterBoeing;

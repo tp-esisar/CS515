@@ -14,7 +14,7 @@ package FilterAirbus is
    
    private
    type T_FilterAirbus is new T_AbstractFilter with record
-      oldValue: Float := 0.0;
+      oldValue: Float := -42.0;
       a: Float;
    end record;
 
