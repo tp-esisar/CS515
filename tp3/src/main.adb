@@ -133,13 +133,13 @@ begin
                                          totalFilter
                                         );
    sensor1.recordObserver(T_PressureObserver_Access(adm1));
-   Put_Line("Test 12 avec 1 sensors (true,100.0,95.0)");
+   Put_Line("Test 15 avec 1 sensors (true,100.0,95.0)");
    sensor1.simuleMeasure((true,100.0,95.0));
    error := error or test(adm1, 2.78100E00, 3.06148E03);
-   Put_Line("Test 13 avec 1 sensors (true,110.0,98.0)");
+   Put_Line("Test 16 avec 1 sensors (true,110.0,98.0)");
    sensor1.simuleMeasure((true,110.0,98.0));
    error := error or test(adm1, 5.70613E00, 3.04782E03);
-   Put_Line("Test 14 avec 1 sensors (true,115.0,104.0)");
+   Put_Line("Test 17 avec 1 sensors (true,115.0,104.0)");
    sensor1.simuleMeasure((true,115.0,104.0));
    error := error or test(adm1, 5.83486E00, 3.02173E03);
 

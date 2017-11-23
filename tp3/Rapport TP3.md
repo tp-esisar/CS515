@@ -803,23 +803,354 @@ end AdmInt;
 
 ## TODO : Tests
 
+### Fonction de test
+
+```
+with AdmInt; use AdmInt;
+
+package Testfun is
+
+   function test
+     (adm: access T_AdmInt'Class;
+      expectedSpeed: in Float;
+      expectedAltitude: in Float)
+   return Boolean;
+ 
+
+end Testfun;
+
+```
+
+> testfun.ads
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+package body Testfun is
+
+   ----------
+   -- test --
+   ----------
+
+   function test
+     (adm: access T_AdmInt'Class;
+      expectedSpeed: in Float;
+      expectedAltitude: in Float)
+      return Boolean
+   is
+      speed: Float;
+      altitude: Float;
+   begin
+      speed := adm.getSpeed;
+      altitude := adm.getAltitude;
+      Put_Line("Expected: speed: " & Float'Image(expectedSpeed) & " altitude: " & Float'Image(expectedAltitude));
+      Put_Line("Received: speed: " & Float'Image(speed) & " altitude: " & Float'Image(altitude));
+      return (Float'Image(expectedAltitude) /= Float'Image(altitude)) or
+        (Float'Image(expectedSpeed) /= Float'Image(speed));
+   end test;
+
+end Testfun;
+
+```
+
+> testfun.adb
+
+Cette fonction permet de réaliser simplement un test unitaire.
+
+Si le test passe, la fonction retourne false, sinon elle retrourne true
+
 ### Fichier de test
 
- ```Ada
+```ada
+with AbstractPressureSensor; use AbstractPressureSensor;
+with PressureSensor; use PressureSensor;
+with AdmExt; use AdmExt;
+With Ada.Text_IO; use Ada.Text_IO;
+with AdmInt; use AdmInt;
+with PressureObserver; use PressureObserver;
+with AbstractAltitude; use AbstractAltitude;
+with ComputeAltitude; use ComputeAltitude;
+with SpeedIncompressible; use SpeedIncompressible;
+with AbstractSpeed; use AbstractSpeed;
+with SpeedCompressible; use SpeedCompressible;
+with filterBoeing; use filterBoeing;
+with AbstractFilter; use AbstractFilter;
+with Testfun; use Testfun;
+with FilterDassault; use FilterDassault;
+with FilterAirbus; use FilterAirbus;
 
- ```
+
+procedure Main is
+   sensor1: T_AbstractPressureSensor_Access;
+   sensor2: T_AbstractPressureSensor_Access;
+
+   altitudeCalc: T_AbstractAltitude_Access;
+   lowSpeedCalc: T_AbstractSpeed_Access;
+   highSpeedCalc: T_AbstractSpeed_Access;
+   staticFilter: T_AbstractFilter_Access;
+   totalFilter: T_AbstractFilter_Access;
+   adm1: T_AdmInt_Access;
+   error: Boolean;
+begin
+   put_line("----- Init -----");
+   sensor1 := new T_PressureSensor;
+   sensor2 := new T_AdmExt;
+   altitudeCalc := new T_ComputeAltitude;
+   lowSpeedCalc := new T_SpeedIncompressible;
+   highSpeedCalc := new T_SpeedCompressible;
+   staticFilter := new T_FilterDassault;
+   totalFilter := new T_FilterDassault;
+   error := False;
+
+   adm1 := AdmInt.Constructor.Initialize(altitudeCalc,
+                                         lowSpeedCalc,
+                                         highSpeedCalc,
+                                         staticFilter,
+                                         totalFilter
+                                        );
+   Put_Line("format des donnees: (true:OK/false:KO,totalPressure,staticPressure)");
+   Put_line("une altitude de -1.0 correspond a une altitude KO");
+   Put_line("-----------------DEBUT Tests du tp2------------------");
+   sensor1.recordObserver(T_PressureObserver_Access(adm1));
+   put_line("Test 1 avec 1 sensor (true,1000.0,42.42)");
+   sensor1.simuleMeasure((true,1000.0,42.42));
+   error := error or test(adm1, 3.84860E01, 3.41551E03);
+
+   put_line("Test 2 avec 1 sensor (true,1000.0,80.4)");
+   sensor1.simuleMeasure((true,1000.0,80.4));
+   error := error or test(adm1, 3.77151E01, 3.13475E03);
+
+   put_line("Test 3 avec 1 sensor (false,1000.0,80.4)");
+   sensor1.simuleMeasure((false,1000.0,80.4));
+   error := error or test(adm1, 3.77151E01, -1.0);
+
+   Put_Line("Test 4 avec 2 sensors (false,1000.0,80.4) (true,1000.0,79.2)");
+   sensor2.recordObserver(T_PressureObserver_Access(adm1));
+   sensor2.simuleMeasure((true,1000.0,79.2));
+   error := error or test(adm1, 3.77397E01, 3.14135E03);
+
+   Put_Line("Test 5 avec 2 sensors (true,1000.0,80.4) (true,1000.0,79.2)");
+   sensor1.simuleMeasure((true,1000.0,80.4));
+   error := error or test(adm1, 3.77274E01, 3.13804E03);
+
+   Put_Line("Test 6 avec 2 sensors (true,1000.0,-42.0) (true,1000.0,79.2)");
+   sensor1.simuleMeasure((true,1000.0,-42.0));
+   error := error or test(adm1, 3.77397E01, 3.14135E03);
+
+   Put_Line("Test 7 avec 2 sensors (true,1000.0,-42.0) (true,1000.0,999999.0)");
+   sensor2.simuleMeasure((true,1000.0,999999.0));
+   error := error or test(adm1, 3.77397E01, -1.0);
+
+   Put_line("-----------------FIN Tests du tp2------------------");
+
+
+   Put_line("-----------------DEBUT Tests du tp3------------------");
+   -- on réinitialize adm pour reset les filtres
+   Put_line("Filtres de Dassault");
+   adm1 := AdmInt.Constructor.Initialize(altitudeCalc,
+                                         lowSpeedCalc,
+                                         highSpeedCalc,
+                                         staticFilter,
+                                         totalFilter
+                                        );
+   sensor1.recordObserver(T_PressureObserver_Access(adm1));
+   Put_Line("Test 8 avec 1 sensors (true,9000.0,42.42)");
+   sensor1.simuleMeasure((true,9000.0,42.42));
+   error := error or test(adm1, 1.17709E02, 3.41551E03);
+   Put_Line("Test 9 avec 1 sensors (true,9000.0,42.42)");
+   sensor1.simuleMeasure((true,9000.0,42.42));
+   error := error or test(adm1, 1.42548E03, 3.41551E03);
+   Put_Line("Test 10 avec 1 sensors (true,100.0,95.0)");
+   sensor1.simuleMeasure((true,100.0,95.0));
+   error := error or test(adm1, 9.10162E01, 3.06148E03);
+   Put_Line("Test 11 avec 1 sensors (true,100.0,95.0)");
+   sensor1.simuleMeasure((true,100.0,95.0));
+   error := error or test(adm1, 2.78100E00, 3.06148E03);
+
+   Put_line("Filtres de Boeing");
+   staticFilter := new T_FilterBoeing;
+   totalFilter := new T_FilterBoeing;
+   adm1 := AdmInt.Constructor.Initialize(altitudeCalc,
+                                         lowSpeedCalc,
+                                         highSpeedCalc,
+                                         staticFilter,
+                                         totalFilter
+                                        );
+   sensor1.recordObserver(T_PressureObserver_Access(adm1));
+   Put_Line("Test 12 avec 1 sensors (true,100.0,95.0)");
+   sensor1.simuleMeasure((true,100.0,95.0));
+   error := error or test(adm1, 2.78100E00, 3.06148E03);
+   Put_Line("Test 13 avec 1 sensors (true,110.0,98.0)");
+   sensor1.simuleMeasure((true,110.0,98.0));
+   error := error or test(adm1, 3.62598E00, 3.04782E03);
+   Put_Line("Test 14 avec 1 sensors (true,115.0,104.0)");
+   sensor1.simuleMeasure((true,115.0,104.0));
+   error := error or test(adm1, 4.21759E00, 3.02173E03);
+
+   Put_line("Filtres de Airbus");
+   staticFilter := T_AbstractFilter_Access(FilterAirbus.Constructor.Initialize(0.01));
+   totalFilter := T_AbstractFilter_Access(FilterAirbus.Constructor.Initialize(0.1));
+   adm1 := AdmInt.Constructor.Initialize(altitudeCalc,
+                                         lowSpeedCalc,
+                                         highSpeedCalc,
+                                         staticFilter,
+                                         totalFilter
+                                        );
+   sensor1.recordObserver(T_PressureObserver_Access(adm1));
+   Put_Line("Test 15 avec 1 sensors (true,100.0,95.0)");
+   sensor1.simuleMeasure((true,100.0,95.0));
+   error := error or test(adm1, 2.78100E00, 3.06148E03);
+   Put_Line("Test 16 avec 1 sensors (true,110.0,98.0)");
+   sensor1.simuleMeasure((true,110.0,98.0));
+   error := error or test(adm1, 5.70613E00, 3.04782E03);
+   Put_Line("Test 17 avec 1 sensors (true,115.0,104.0)");
+   sensor1.simuleMeasure((true,115.0,104.0));
+   error := error or test(adm1, 5.83486E00, 3.02173E03);
+
+
+   if error
+   then
+      Put_Line("TESTS FAIL");
+   else
+      Put_Line("TESTS OK");
+   end if;
+
+end Main;
+```
+
+> main.adb
 
 ### Exécution des tests
 
-```Ada
+```
+D:\Documents\IT-work\CS515\tp3\obj\main.exe
+----- Init -----
+format des donnees: (true:OK/false:KO,totalPressure,staticPressure)
+une altitude de -1.0 correspond a une altitude KO
+-----------------DEBUT Tests du tp2------------------
+Test 1 avec 1 sensor (true,1000.0,42.42)
+Expected: speed:  3.84860E+01 altitude:  3.41551E+03
+Received: speed:  3.84860E+01 altitude:  3.41551E+03
+Test 2 avec 1 sensor (true,1000.0,80.4)
+Expected: speed:  3.77151E+01 altitude:  3.13475E+03
+Received: speed:  3.77151E+01 altitude:  3.13475E+03
+Test 3 avec 1 sensor (false,1000.0,80.4)
+Expected: speed:  3.77151E+01 altitude: -1.00000E+00
+Received: speed:  3.77151E+01 altitude: -1.00000E+00
+Test 4 avec 2 sensors (false,1000.0,80.4) (true,1000.0,79.2)
+Expected: speed:  3.77397E+01 altitude:  3.14135E+03
+Received: speed:  3.77397E+01 altitude:  3.14135E+03
+Test 5 avec 2 sensors (true,1000.0,80.4) (true,1000.0,79.2)
+Expected: speed:  3.77274E+01 altitude:  3.13804E+03
+Received: speed:  3.77274E+01 altitude:  3.13804E+03
+Test 6 avec 2 sensors (true,1000.0,-42.0) (true,1000.0,79.2)
+Expected: speed:  3.77397E+01 altitude:  3.14135E+03
+Received: speed:  3.77397E+01 altitude:  3.14135E+03
+Test 7 avec 2 sensors (true,1000.0,-42.0) (true,1000.0,999999.0)
+Expected: speed:  3.77397E+01 altitude: -1.00000E+00
+Received: speed:  3.77397E+01 altitude: -1.00000E+00
+-----------------FIN Tests du tp2------------------
+-----------------DEBUT Tests du tp3------------------
+Filtres de Dassault
+Test 8 avec 1 sensors (true,9000.0,42.42)
+Expected: speed:  1.17709E+02 altitude:  3.41551E+03
+Received: speed:  1.17709E+02 altitude:  3.41551E+03
+Test 9 avec 1 sensors (true,9000.0,42.42)
+Expected: speed:  1.42548E+03 altitude:  3.41551E+03
+Received: speed:  1.42548E+03 altitude:  3.41551E+03
+Test 10 avec 1 sensors (true,100.0,95.0)
+Expected: speed:  9.10162E+01 altitude:  3.06148E+03
+Received: speed:  9.10162E+01 altitude:  3.06148E+03
+Test 11 avec 1 sensors (true,100.0,95.0)
+Expected: speed:  2.78100E+00 altitude:  3.06148E+03
+Received: speed:  2.78100E+00 altitude:  3.06148E+03
+Filtres de Boeing
+Test 12 avec 1 sensors (true,100.0,95.0)
+Expected: speed:  2.78100E+00 altitude:  3.06148E+03
+Received: speed:  2.78100E+00 altitude:  3.06148E+03
+Test 13 avec 1 sensors (true,110.0,98.0)
+Expected: speed:  3.62598E+00 altitude:  3.04782E+03
+Received: speed:  3.62598E+00 altitude:  3.04782E+03
+Test 14 avec 1 sensors (true,115.0,104.0)
+Expected: speed:  4.21759E+00 altitude:  3.02173E+03
+Received: speed:  4.21759E+00 altitude:  3.02173E+03
+Filtres de Airbus
+Test 15 avec 1 sensors (true,100.0,95.0)
+Expected: speed:  2.78100E+00 altitude:  3.06148E+03
+Received: speed:  2.78100E+00 altitude:  3.06148E+03
+Test 16 avec 1 sensors (true,110.0,98.0)
+Expected: speed:  5.70613E+00 altitude:  3.04782E+03
+Received: speed:  5.70613E+00 altitude:  3.04782E+03
+Test 17 avec 1 sensors (true,115.0,104.0)
+Expected: speed:  5.83486E+00 altitude:  3.02173E+03
+Received: speed:  5.83486E+00 altitude:  3.02173E+03
+TESTS OK
+[2017-11-23 20:30:14] process terminated successfully, elapsed time: 00.42s
 
 ```
 
 ### Analyse
 
-### Test 1 
+#### TP2
 
-- ​
+Dans les tests 1 à 7 on ne se préocupe que de l'altitude
 
+#### Test 1
 
+- On voit que la valeur retournée est correct, cela confirme l’exigence No 5.
 
+#### Test 2
+
+- On voit que la valeur retournée est correct, cela confirme l’exigence No 5.
+
+#### Test 2
+
+- On utilise encore "simulMeasure()" pour un statut KO, on observe que l’Adm recalcule une valeur KO lui aussi.
+- Cela confirme en partie l’exigence No 4 (voir test 7).
+
+#### Test 4
+
+- Toujours avec le capteur KO, on ajoute un nouveau capteur OK avec une valeur valide, on observe que l’Adm passe immédiatement à l’état OK et retourne une altitude valide en fonction de la pression retourné par le deuxième capteur.
+
+#### Test 5
+
+- L’état du premier capteur redevient OK et les valeurs des capteur sont tous les deux valides. On observe une valeur d’altitude correcte en fonction d’une pression équivalente à la moyenne des pressions des capteurs. Cela confirme l’exigence No 3.
+
+#### Test 6
+
+- L’état du premier capteur reste OK mais sa valeur est négative, ce qui est invalide. On observe que l’Adm se met à jour uniquement avec la pression du deuxième capteur et on obtient la même altitude qu’au test 4, le capteur 1 est bien ignoré par l’Adm. Cela confirme l’exigence No 2.
+
+#### Test 7
+
+- Au tour du deuxième capteur de donner une valeur invalide avec un statut OK, cette fois ci la valeur est supérieur à p0, on observe que l’Adm retourne bien le statut KO, l’exigence No 4 est confirmée.
+
+#### TP3
+
+#### Filtre Dassault (aucun filtre)
+
+Ces tests ont pour objectif de valider le changement de formule, le filtre le plus simple (fonction identité) est donc utilisé
+
+#### Tests 8 et 9
+
+- Dans le test 8 on observe que la vitesse est claculée selon la formule de l'exigence 5 (par défaut), de plus cette vitesse est sperieur à 100 m/s
+- Dans le test 9 les pressions d'entrée sont identiques mais la vitesse retournée est différente, cette dernière est calculée via la formule de l'exigence 4 car la vitesse précédente était > 100 m/s.
+- Ces tests confirment que les deux formules sont correctes (exigences 4 et 5) et valident le changement de formule dans le sense : `< 99 m/s` à `> 100 m/s` cela confirme en partie l'exigence 3
+
+#### Tests 10 et 11
+
+- Dans le test 10 on observe que la vitesse est calculée selon la formule de l'exigence 4 et est < 100 m/s, on s'attends à un changement de formule au prochain calcule
+- Dans le test 11 les pressions d'entrée sont identiques, mais la vitesse est différente, cette dernière est calculée par la formule de l'exigence 4
+- Cela confirme le changement de formule dans le sense : `> 100 m/s` à `< 99 m/s` l'exigence 3 est donc validée complètement
+
+#### Filtres Boeing et Airbus
+
+Ces test ont pour objectif de tester les filtres 
+
+#### Tests 12 à 17
+
+- Pour ces tests, les valeurs attendues ont été précalculés "à la main" avec un tableur excel
+- On ne fait que verifier le résultat, cela valide l'exigence 2
+
+#### Exigence 1
+
+- Cette exigence est validée par les tests 6 et 7 du tp 2 où la valeur de la vitesse est gardée bien que les pressions soient dans un état KO (2 pressions statiques invalides)
+- Le test 5 montre que les pressions sont bien moyennés 
