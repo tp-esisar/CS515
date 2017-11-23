@@ -6,7 +6,7 @@ Développement d'un ADM (Air Data Module) simplifié qui calcule l'altitude et l
 
 ![Diagramme de Classe](ClassDiagram1.png)
 
-On retrouve la structure générale mise en place au TP précédent, avec le **pattern listener** permettant à un *AdmInt* de s'abonner à un *PressureSensor*. Maintenant, comme l'*AdmInt* peut avoir plusieurs stratégie pour le filter ou le calcul de la vitesse, on utilise le **pattern strategy**. Ainsi peut importe l'objet utilisé pour filtrer ou pour calculer la vitesse, l'*AdmInt* ne verra que l'abstraction associée. On peut définir cet objet à la construction, et le changer en cours d'exécution.
+On retrouve la structure générale mise en place au TP précédent, avec le **pattern listener** permettant à un *AdmInt* de s'abonner à un *PressureSensor*. Maintenant, comme l'*AdmInt* peut avoir plusieurs stratégie pour le filtre ou le calcul de la vitesse, on utilise le **pattern strategy**. Ainsi peut importe l'objet utilisé pour filtrer ou pour calculer la vitesse, l'*AdmInt* ne verra que l'abstraction associée. On peut définir cet objet à la construction, et le changer en cours d'exécution.
 
 ## Code source
 
@@ -255,7 +255,7 @@ package FilterAirbus is
    
    private
    type T_FilterAirbus is new T_AbstractFilter with record
-      oldValue: Float := 0.0;
+      oldValue: Float := -42.0;
       a: Float;
    end record;
 
@@ -268,7 +268,7 @@ end filterAirbus;
 package body FilterAirbus is
 
    package body Constructor is
-      function Initialize (a: in Float) return T_FilterAirbus_Access;
+      function Initialize (a: in Float) return T_FilterAirbus_Access
       is
          Temp_Ptr : T_FilterAirbus_Access;
       begin
@@ -282,8 +282,14 @@ package body FilterAirbus is
       return Float
    is
    begin
-      this.oldValue = pressure + this.a * this.oldValue;
+      if this.oldValue < 0.0
+      then
+         this.oldValue := pressure;
+      else
+         this.oldValue := pressure + this.a * this.oldValue;
+      end if;
       return this.oldValue;
+
    end filter;
 
 end FilterAirbus;
@@ -308,7 +314,7 @@ package filterBoeing is
    
 private
    type T_FilterBoeing is new T_AbstractFilter with record
-      oldValue: Float := 0.0;
+      oldValue: Float := -42.0;
    end record;
 
 end filterBoeing;
@@ -317,6 +323,8 @@ end filterBoeing;
 > filterboeing.ads
 
 ```Ada
+with Ada.Text_IO; use Ada.Text_IO;
+
 package body filterBoeing is
 
    function filter
@@ -324,15 +332,17 @@ package body filterBoeing is
       pressure: in Float)
       return Float
    is
+      result: Float;
    begin
-      if this.oldValue = 0.0
+      if this.oldValue < 0.0
       then
-         this.oldValue := pressure;
+         result := pressure;
       else
-         this.oldValue := (pressure + this.oldValue)/2.0;
+         result := (pressure + this.oldValue)/2.0;
       end if;
+      this.oldValue := pressure;
+      return result;
 
-      return this.oldValue;
    end filter;
 
 end filterBoeing;
@@ -342,7 +352,7 @@ end filterBoeing;
 
 #### FilterDassault
 
-Rien de spécial dans l'implémentation de ce filtre.
+Rien de spécial dans l'implémentation de ce filtre qui retourne directement la pression.
 
 ```Ada
 with AbstractFilter; use AbstractFilter;
@@ -379,7 +389,7 @@ end FilterDassault;
 
 ### Stratégie de vitesse
 
-C'est la première apparition du partern stratégie. Il permet de regrouper les différents types de calcul de la vitesse (qui doivent implémenter une fonction *computeSpeed*).
+C'est la seconde apparition du partern stratégie. Il permet de regrouper les différents types de calcul de la vitesse (qui doivent implémenter une fonction *computeSpeed*).
 
 ```Ada
 with Measure; use Measure;
@@ -397,11 +407,95 @@ end AbstractSpeed;
 
 > abstractspeed.ads
 
-#### TODO : Vitesse à écoulement compressible
+#### Vitesse à écoulement compressible
 
+L'objet contient simplement la fonction permettant de calculer la vitesse avec la bonne formule (quelques constantes sont définies).
 
+```Ada
+with AbstractSpeed; use AbstractSpeed;
+with Measure; use Measure;
 
-#### TODO : Vitesse à écoulement incompressible
+package SpeedCompressible is
+   
+   type T_SpeedCompressible is new T_AbstractSpeed with null record;
+   type T_SpeedCompressible_Access is access all T_SpeedCompressible'Class;
+   
+   overriding function computeSpeed(this: access T_SpeedCompressible;
+                                    measure: in T_Measure) return Float;
+   
+   rho : constant Float := 1.293;
+   gamma : constant Float := 7.0/5.0;
+   vs : constant Float := 335.0;
+
+end SpeedCompressible;
+```
+
+> speedcompressible.ads
+
+```Ada
+with Ada.Numerics.Generic_Elementary_Functions;
+
+package body speedCompressible is
+
+   overriding function computeSpeed
+     (this: access T_SpeedCompressible;
+      measure: in T_Measure)
+      return Float
+   is
+      package Math is new Ada.Numerics.Generic_Elementary_Functions(Float);
+   begin
+      return Math.Sqrt((2.0/(gamma-1.0))*
+                       (Math."**"((measure.totalPressure/measure.staticPressure),
+                          ((gamma-1.0)/gamma))-1.0))*vs;
+   end computeSpeed;
+
+end speedCompressible;
+```
+
+> speedcompressible.adb
+
+#### Vitesse à écoulement incompressible
+
+L'objet contient simplement la fonction permettant de calculer la vitesse avec la bonne formule (quelques constantes sont définies).
+
+```Ada
+with AbstractSpeed; use AbstractSpeed;
+with Measure; use Measure;
+
+package SpeedIncompressible is
+
+   type T_SpeedIncompressible is new T_AbstractSpeed with null record;
+   type T_SpeedIncompressible_Access is access all T_SpeedIncompressible'Class;
+   
+   overriding function computeSpeed(this: access T_SpeedIncompressible;
+                                    measure: in T_Measure) return Float; 
+   
+   rho : constant Float := 1.293;
+
+end SpeedIncompressible;
+```
+
+> speedincompressible.ads
+
+```Ada
+with Ada.Numerics.Generic_Elementary_Functions;
+
+package body SpeedIncompressible is
+
+   overriding function computeSpeed
+     (this: access T_SpeedIncompressible;
+      measure: in T_Measure)
+      return Float
+   is
+      package Math is new Ada.Numerics.Generic_Elementary_Functions(Float);
+   begin
+      return Math.Sqrt(2.0*(measure.totalPressure-measure.staticPressure)/rho);
+   end computeSpeed;
+
+end SpeedIncompressible;
+```
+
+> speedincompressible.adb
 
 
 
@@ -535,7 +629,7 @@ end Traitement;
 
 > traitement.adb
 
-### TODO : AdmInt
+### AdmInt
 
 Implémente l'objet en charge de récupèrer les données des différents capteur et de fournir la valeur de l'altitude et de la vitesse en temps réel.
 
@@ -547,7 +641,165 @@ Ensuite à la notification d'une nouvelle valeur, *AdmInt* va :
 
 1. Enregistrer la valeur dans la Hashmap
 2. Passer la liste de valeur au module *Traitement* qui lui retourne la moyenne de toutes les pressions
-3. TODO ...
+3. Si le status est correcte
+   1. On calcule l'altitude
+   2. On passe les valeurs de pression moyennés dans les filtres correspondant
+   3. On calcul la vitesse
+4. Si le status est KO on met l'altitude à -1 (ce qui signifie qu'il n'y a pas de valeur) et on concerve la vitesse précédente.
+
+La valeur de l'altitude et de la vitesse est concervée de manière à pouvoir donner l'informations dès qu'un autre objet la demande.
+
+Les différents objets qui serviront au filtrage des pressions et aux différents calculs sont passés en paramètre lors de la construction de l'objet.
+
+```Ada
+with PressureObserver; use PressureObserver;
+with Ada.Containers.Hashed_Maps; use Ada.Containers;
+with Measure; use Measure;
+with AbstractPressureSensor; use AbstractPressureSensor;
+with AbstractAltitude; use AbstractAltitude;
+with AbstractFilter; use AbstractFilter;
+with AbstractSpeed; use AbstractSpeed;
+
+package AdmInt is
+   type T_AdmInt is new T_PressureObserver with private;
+   type T_AdmInt_Access is access all T_AdmInt'Class;
+   
+   overriding procedure handleNewPressure(this: access T_AdmInt; 
+                                          sensor: access T_AbstractPressureSensor'Class
+                                         );
+   function getAltitude (this: access T_AdmInt) return Float;
+   function getSpeed (this: access T_AdmInt) return Float;
+   
+   function ID_Hashed (id: T_AbstractPressureSensor_Access) return Hash_Type;
+
+   package SensorMap is new Ada.Containers.Hashed_Maps
+     (Key_Type => T_AbstractPressureSensor_Access,
+      Element_Type => T_Measure,
+      Hash => ID_Hashed,
+      Equivalent_Keys => "=");
+   
+   package Constructor is
+      function Initialize(a: access T_AbstractAltitude'Class;
+                          ls: access T_AbstractSpeed'Class;
+                          hs: access T_AbstractSpeed'Class;
+                          sf: access T_AbstractFilter'Class;
+                          tf: access T_AbstractFilter'Class) 
+                          return T_AdmInt_Access;
+   end;
+     
+   
+private
+   type T_AdmInt is new T_PressureObserver with record
+      listeCapteur: SensorMap.Map;
+      altitudeCalc: access T_AbstractAltitude'Class;
+      lowSpeedCalc: access T_AbstractSpeed'Class;
+      highSpeedCalc: access T_AbstractSpeed'Class;
+      staticFilterCalc: access T_AbstractFilter'Class;
+      totalFilterCalc: access T_AbstractFilter'Class;
+      savedSpeed: Float;
+      savedAltitude: Float;
+   end record;
+
+end AdmInt;
+```
+
+> admint.ads
+
+```Ada
+with AdmInt; use AdmInt.SensorMap;
+with System; use System;
+with ComputeAltitude; use ComputeAltitude;
+with Traitement; use Traitement;
+with Ada.Text_IO; use Ada.Text_IO;
+with System.Address_To_Access_Conversions;
+with Ada.Strings;
+with System.Address_Image;
+with Ada.Strings.Hash;
+
+package body AdmInt is
+
+   overriding procedure handleNewPressure
+     (this: access T_AdmInt;
+      sensor: access T_AbstractPressureSensor'Class)
+   is
+      meanPressure: T_Measure;
+      filteredPressure: T_Measure;
+   begin
+      if this.listeCapteur.Find(sensor) = No_Element
+      	then this.listeCapteur.Insert(sensor, sensor.getMeasure);
+      	else this.listeCapteur.Replace(sensor, sensor.getMeasure);
+      end if;
+      meanPressure := Moyenne(this.listeCapteur);
+      if meanPressure.status
+      then
+         this.savedAltitude := this.altitudeCalc.compute(meanPressure);
+         filteredPressure.status := meanPressure.status;
+         filteredPressure.totalPressure := this.totalFilterCalc.filter(meanPressure.totalPressure);
+         filteredPressure.staticPressure := this.staticFilterCalc.filter(meanPressure.staticPressure);
+         if this.savedSpeed <= 100.0
+         then
+            this.savedSpeed := this.lowSpeedCalc.computeSpeed(filteredPressure);
+         else
+            this.savedSpeed := this.highSpeedCalc.computeSpeed(filteredPressure);
+         end if;
+      else
+         this.savedAltitude := -1.0;
+      end if;
+
+   end handleNewPressure;
+
+   function ID_Hashed
+     (id: T_AbstractPressureSensor_Access)
+      return Hash_Type
+   is
+   begin
+      return Ada.Strings.Hash(System.Address_Image(id.all'Address));
+   end ID_Hashed;
+
+   function getAltitude
+     (this: access T_AdmInt)
+      return Float
+   is
+   begin
+      return this.savedAltitude;
+   end;
+
+   function getSpeed
+     (this: access T_AdmInt)
+      return Float
+   is
+   begin
+      return this.savedSpeed;
+   end;
+
+   package body Constructor is
+      function Initialize(a: access T_AbstractAltitude'Class;
+                          ls: access T_AbstractSpeed'Class;
+                          hs: access T_AbstractSpeed'Class;
+                          sf: access T_AbstractFilter'Class;
+                          tf: access T_AbstractFilter'Class)
+                          return T_AdmInt_Access
+      is
+         Temp_Ptr: T_AdmInt_Access;
+      begin
+         Temp_Ptr := new T_AdmInt;
+         Temp_Ptr.altitudeCalc := a;
+         Temp_Ptr.lowSpeedCalc := ls;
+         Temp_Ptr.highSpeedCalc := hs;
+         Temp_Ptr.staticFilterCalc := sf;
+         Temp_Ptr.totalFilterCalc := tf;
+         Temp_Ptr.savedSpeed := 0.0;
+         Temp_Ptr.savedAltitude := 0.0;
+         return Temp_Ptr;
+      end Initialize;
+   end Constructor;
+
+end AdmInt;
+```
+
+> admint.adb
+
+
 
 ## TODO : Tests
 

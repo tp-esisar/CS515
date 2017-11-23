@@ -1,5 +1,4 @@
 with AdmInt; use AdmInt.SensorMap;
---with AdmInt; use AdmInt;
 with System; use System;
 with ComputeAltitude; use ComputeAltitude;
 with Traitement; use Traitement;
@@ -35,8 +34,6 @@ package body AdmInt is
          else
             this.savedSpeed := this.highSpeedCalc.computeSpeed(filteredPressure);
          end if;
-
-         --Put_Line("Altitude : " & Float'image(this.savedAltitude) & ", Speed : " & Float'Image(this.savedSpeed));
       else
          this.savedAltitude := -1.0;
       end if;
@@ -48,7 +45,6 @@ package body AdmInt is
       return Hash_Type
    is
    begin
-      -- Put_Line("hash: " & System.Address_Image(id.all'Address));
       return Ada.Strings.Hash(System.Address_Image(id.all'Address));
    end ID_Hashed;
 
