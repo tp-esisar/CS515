@@ -6,8 +6,9 @@ package ComputeAltitude is
    type T_ComputeAltitude_Access is access all T_ComputeAltitude'Class;
    
    overriding function compute(this: access T_ComputeAltitude;
-                               measure: in T_Measure) return Float;
-   
+                               measure: in T_Measure) return Float
+     with pre => measure.staticPressure > 0.0 and measure.staticPressure <= p0,
+     post => compute'Result >= 0.0;
    
    g : constant Float := 9.807;
    p0 : constant Float := 101315.0;

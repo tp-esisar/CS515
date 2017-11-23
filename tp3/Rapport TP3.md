@@ -531,8 +531,9 @@ package ComputeAltitude is
    type T_ComputeAltitude_Access is access all T_ComputeAltitude'Class;
    
    overriding function compute(this: access T_ComputeAltitude;
-                               measure: in T_Measure) return Float;
-   
+                               measure: in T_Measure) return Float
+     with pre => measure.staticPressure > 0.0 and measure.staticPressure <= p0,
+     post => compute'Result >= 0.0;
    
    g : constant Float := 9.807;
    p0 : constant Float := 101315.0;
@@ -544,6 +545,8 @@ end ComputeAltitude;
 ```
 
 > computealtitude.ads
+
+Nous avons mis en place de la **programmation par contrat** avec une précondition concernant la pression statique et une postcondition concernant le l'altitude retournée par cette fonction. Cela permet de valider le bon fonctionnement de la fonction, ainsi que la validité de la valeur retournée.
 
 ```Ada
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -572,16 +575,23 @@ Remarque : Il s'agit uniquement d'un package et pas d'un objet. Cela permet de s
 ```ada
 with AdmInt;
 with Measure;
-with Compute;
+with ComputeAltitude;
 
 package Traitement is
    
    function Moyenne(liste: in AdmInt.SensorMap.Map) 
-                    return Measure.T_Measure;   
+                    return Measure.T_Measure
+   with post => (Moyenne'Result.status and 
+                   Moyenne'Result.staticPressure <= ComputeAltitude.p0 and Moyenne'Result.staticPressure > 0.0 and
+                   Moyenne'Result.totalPressure <= ComputeAltitude.p0 and Moyenne'Result.totalPressure > 0.0
+                ) or not Moyenne'Result.status;
+   
 end Traitement;
 ```
 
 > traitement.ads
+
+On retourve ici la programmation par contrat avec une post condition qui vérifie la validité du résultat de la moyenne calculée.
 
 ```ada
 with AdmInt; use AdmInt.SensorMap;
