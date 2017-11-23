@@ -1,5 +1,9 @@
 # CS 515 - TP3 : Pattern Stratégie
 
+> Alexis BERTRAND
+>
+> Guillaume BRUCHON
+
 Développement d'un ADM (Air Data Module) simplifié qui calcule l'altitude et la vitesse son statut à partir de mesures de pression atmosphérique statique et dynamique.
 
 ## Diagramme UML
