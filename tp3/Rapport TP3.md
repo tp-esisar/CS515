@@ -801,9 +801,13 @@ end AdmInt;
 
 
 
-## TODO : Tests
+## Tests
 
 ### Fonction de test
+
+Cette fonction permet de réaliser simplement un test unitaire.
+
+Si le test passe, la fonction retourne false, sinon elle retrourne true.
 
 ```
 with AdmInt; use AdmInt;
@@ -853,10 +857,6 @@ end Testfun;
 ```
 
 > testfun.adb
-
-Cette fonction permet de réaliser simplement un test unitaire.
-
-Si le test passe, la fonction retourne false, sinon elle retrourne true
 
 ### Fichier de test
 
@@ -1127,30 +1127,30 @@ Dans les tests 1 à 7 on ne se préocupe que de l'altitude
 
 #### Filtre Dassault (aucun filtre)
 
-Ces tests ont pour objectif de valider le changement de formule, le filtre le plus simple (fonction identité) est donc utilisé
+Ces tests ont pour objectif de valider le changement de formule, le filtre le plus simple (fonction identité) est donc utilisé.
 
 #### Tests 8 et 9
 
-- Dans le test 8 on observe que la vitesse est claculée selon la formule de l'exigence 5 (par défaut), de plus cette vitesse est sperieur à 100 m/s
+- Dans le test 8 on observe que la vitesse est claculée selon la formule de l'exigence 5 (par défaut). De plus cette vitesse est supérieur à 100 m/s.
 - Dans le test 9 les pressions d'entrée sont identiques mais la vitesse retournée est différente, cette dernière est calculée via la formule de l'exigence 4 car la vitesse précédente était > 100 m/s.
 - Ces tests confirment que les deux formules sont correctes (exigences 4 et 5) et valident le changement de formule dans le sense : `< 99 m/s` à `> 100 m/s` cela confirme en partie l'exigence 3
 
 #### Tests 10 et 11
 
-- Dans le test 10 on observe que la vitesse est calculée selon la formule de l'exigence 4 et est < 100 m/s, on s'attends à un changement de formule au prochain calcule
+- Dans le test 10 on observe que la vitesse est calculée selon la formule de l'exigence 4 et est < 100 m/s, on s'attends à un changement de formule au prochain calcul.
 - Dans le test 11 les pressions d'entrée sont identiques, mais la vitesse est différente, cette dernière est calculée par la formule de l'exigence 4
-- Cela confirme le changement de formule dans le sense : `> 100 m/s` à `< 99 m/s` l'exigence 3 est donc validée complètement
+- Cela confirme le changement de formule dans le sens : `> 100 m/s` à `< 99 m/s` l'exigence 3 est donc validée complètement.
 
 #### Filtres Boeing et Airbus
 
-Ces test ont pour objectif de tester les filtres 
+Ces tests ont pour objectif de tester les filtres .
 
 #### Tests 12 à 17
 
-- Pour ces tests, les valeurs attendues ont été précalculés "à la main" avec un tableur excel
-- On ne fait que verifier le résultat, cela valide l'exigence 2
+- Pour ces tests, les valeurs attendues ont été précalculés "à la main" avec un tableau excel.
+- On ne fait que verifier le résultat, cela valide l'exigence 2.
 
 #### Exigence 1
 
-- Cette exigence est validée par les tests 6 et 7 du tp 2 où la valeur de la vitesse est gardée bien que les pressions soient dans un état KO (2 pressions statiques invalides)
-- Le test 5 montre que les pressions sont bien moyennés 
+- Cette exigence est validée par les tests 6 et 7 du tp 2 où la valeur de la vitesse est gardée bien que les pressions soient dans un état KO (2 pressions statiques invalides).
+- Le test 5 montre que les pressions sont bien moyennés.
