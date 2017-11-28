@@ -5,6 +5,7 @@ with Vitesse; use Vitesse;
 package IrsAdapter is
 
    type T_IrsAdapter is new T_AbstractVitesse with private;
+   type T_IrsAdapter_Access is access T_IrsAdapter'Class;
    
    procedure Initialise (this: in out T_IrsAdapter; irs: access T_Irs);
    
