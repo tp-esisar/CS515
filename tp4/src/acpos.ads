@@ -15,9 +15,9 @@ package Acpos is
    package ADMList is new Vectors (Natural, T_AdmAdapter_Access);
    
    procedure Initialise(this: access T_Acpos;
-                        adms: in out ADMList.Vector;
-                        irss: in out IRSList.Vector;
-                        gpss: in out GPSList.Vector);
+                        adms: in ADMList.Vector;
+                        irss: in IRSList.Vector;
+                        gpss: in GPSList.Vector);
    
    function getSpeed(this: access T_Acpos) return Float;
    

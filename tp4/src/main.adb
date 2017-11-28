@@ -23,6 +23,10 @@ procedure Main is
    irs2Adapter: T_IrsAdapter_Access;
    gps1Adapter: T_GpsAdapter_Access;
    gps2Adapter: T_GpsAdapter_Access;
+   admList: Acpos.ADMList.Vector;
+   irsList: Acpos.IRSList.Vector;
+   gpsList: Acpos.GPSList.Vector;
+
    acpos1: T_Acpos;
    acpos2: T_Acpos;
    error: Boolean := False;
@@ -51,6 +55,14 @@ begin
    gps2Adapter.Initialise(gps2);
 
    --Init acpos1 et acpos2
+   admList.Append(adm1);
+   admList.Append(adm2);
+   admList.Append(adm3);
+   irsList.Append(irs1);
+   irsList.Append(irs2);
+   gpsList.Append(gps2);
+   gpsList.Append(gps1);
+
 
    Put_Line("---------- Debut des tests ----------");
 

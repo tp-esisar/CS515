@@ -1,4 +1,4 @@
-# CS 515 - TP3 : Pattern Stratégie
+# CS 515 - TP4: Pattern Chaine de responsabilité
 
 > Alexis BERTRAND
 >
