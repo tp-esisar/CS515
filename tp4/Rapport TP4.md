@@ -69,9 +69,51 @@ end Adm;
 
 > adm.adb
 
+```Ada
+package Gps is
+
+   type T_Gps is tagged private;
+   type T_Gps_Access is access all T_Gps;
+   
+   procedure setValue(this: access T_Gps; v: in Float);
+   function gpsSpeed(this: access T_Gps) return Float
+     with Post => gpsSpeed'Result >= 0.0 and gpsSpeed'Result <= 1000.0;
+   
+private
+   
+   type T_Gps is tagged record
+      value: Float;
+   end record;
+end Gps;
+```
+
+> gps.ads
+
+```Ada
+package body Gps is
+
+   procedure setValue (this: access T_Gps; v: in Float) is
+   begin
+      this.value := v;
+   end setValue;
+
+   function gpsSpeed (this: access T_Gps) return Float is
+   begin
+      return this.value;
+   end gpsSpeed;
+
+end Gps;
+```
+
+> gps.adb
+
+
+
 Bilan des contrats
 
 with Post => getValue'Result >= 0.0 and getValue'Result <= 1300.0;
+
+with Post => gpsSpeed'Result >= 0.0 and gpsSpeed'Result <= 1000.0;
 
 
 

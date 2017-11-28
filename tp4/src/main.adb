@@ -7,6 +7,7 @@ with IrsAdapter; use IrsAdapter;
 with GpsAdapter; use GpsAdapter;
 with Acpos; use Acpos;
 with test; use test;
+with AbstractVitesse; use AbstractVitesse;
 
 
 procedure Main is
@@ -24,8 +25,14 @@ procedure Main is
    irs2Adapter: T_IrsAdapter_Access;
    gps1Adapter: T_GpsAdapter_Access;
    gps2Adapter: T_GpsAdapter_Access;
+
+   admList: Acpos.List.Vector;
+   irsList: Acpos.List.Vector;
+   gpsList: Acpos.List.Vector;
+
    acpos1: T_Acpos_Access;
    acpos2: T_Acpos_Access;
+
    error: Boolean := False;
 begin
    Put_Line("---------- Initialisation ----------");
@@ -50,10 +57,25 @@ begin
    irs2Adapter.Initialise(irs2);
    gps1Adapter.Initialise(gps1);
    gps2Adapter.Initialise(gps2);
-   acpos1 := new T_Acpos;
-   acpos2 := new T_Acpos;
+
 
    --Init acpos1 et acpos2
+   admList.Append(T_AbstractVitesse_Access(adm1Adapter));
+   admList.Append(T_AbstractVitesse_Access(adm2Adapter));
+   admList.Append(T_AbstractVitesse_Access(adm3Adapter));
+   irsList.Append(T_AbstractVitesse_Access(irs1Adapter));
+   irsList.Append(T_AbstractVitesse_Access(irs2Adapter));
+   gpsList.Append(T_AbstractVitesse_Access(gps2Adapter));
+   gpsList.Append(T_AbstractVitesse_Access(gps1Adapter));
+   acpos1 := new T_Acpos;
+   acpos1.Initialise(admList, irsList, gpsList);
+   admList.Reverse_Elements;
+   irsList.Reverse_Elements;
+   gpsList.Reverse_Elements;
+   acpos2 := new T_Acpos;
+   acpos2.Initialise(admList, irsList, gpsList);
+
+
 
    Put_Line("---------- Debut des tests ----------");
 
@@ -79,7 +101,7 @@ begin
 
    Put_Line("===> Test 4");
    irs2.setValue(900.0);
-   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 800.0);
 
    Put_Line("===> Test 5");
    acpos1.setCommand(IRS_FIRST);
@@ -95,7 +117,7 @@ begin
    Put_Line("===> Test 6");
    adm1.setState(100.0, False);
    irs2.setValue(850.0);
-   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 800.0);
 
    Put_Line("===> Test 7");
    acpos1.setCommand(ADM_FIRST);
@@ -115,6 +137,7 @@ begin
    end if;
 
 --   Put_Line("===> Test du contrat");
---   irs2.setValue(1000.0);
+--   adm1.setState(2000.0, True);
+--   error := error or testunit(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
 
 end Main;

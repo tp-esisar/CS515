@@ -3,6 +3,7 @@ with AbstractVitesse; use AbstractVitesse;
 package SpeedSelector is
 
    type T_SpeedSelector is tagged private;
+   type T_SpeedSelector_Access is access all T_SpeedSelector'Class;
    
    procedure Initialise (this: in out T_SpeedSelector; vitesse: access T_AbstractVitesse'Class); 
    

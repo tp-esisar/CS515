@@ -12,6 +12,4 @@ private
    type T_Gps is tagged record
       value: Float;
    end record;
-   
-
 end Gps;

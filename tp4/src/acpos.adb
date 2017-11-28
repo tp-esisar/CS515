@@ -1,60 +1,45 @@
+with Acpos; use Acpos.List;
+
 package body Acpos is
 
 
-   function init_rec(adms: in out ADMList.Vector;
-                     irss: in out IRSList.Vector;
-                     gpss: in out GPSList.Vector)
-                     return T_Chaines
+   function init_rec(l1c: in List.Cursor;
+                     l2c: in List.Cursor;
+                     l3c: in List.Cursor)
+                     return T_SpeedSelector_Access
    is
-      res: T_Chaines;
-      next: T_Chaines;
+      res: T_SpeedSelector_Access;
+      next: T_SpeedSelector_Access;
+      l1 : List.Cursor;
+      l2 : List.Cursor;
+      l3 : List.Cursor;
    begin
-      if adms.Is_Empty then
-         if irss.Is_Empty then
-            if gpss.Is_Empty then
-               res.chaineADM := null;
+      l1 := l1c;
+      l2 := l2c;
+      l3 := l3c;
+      if l1 = No_Element then
+         if l2 = No_Element then
+            if l3 = No_Element then
+               return null;
             else
-               res.chaineADM := new T_SpeedSelector;
-               res.chaineADM.Initialise(gpss.First_Element);
-               gpss.Delete_First;
+               res := new T_SpeedSelector;
+               res.Initialise(Element(l3));
+               List.Next(l3);
             end if;
          else
-            res.chaineADM := new T_SpeedSelector;
-            res.chaineADM.Initialise(irss.First_Element);
-            irss.Delete_First;
+            res := new T_SpeedSelector;
+            res.Initialise(Element(l2));
+            List.Next(l2);
          end if;
       else
-         res.chaineADM := new T_SpeedSelector;
-         res.chaineADM.Initialise(adms.First_Element);
-         adms.Delete_First;
+         res := new T_SpeedSelector;
+         res.Initialise(Element(l1));
+         List.Next(l1);
       end if;
 
-      if irss.Is_Empty then
-         if adms.Is_Empty then
-            if gpss.Is_Empty then
-               res.chaineIRS := null;
-            else
-               res.chaineIRS := new T_SpeedSelector;
-               res.chaineIRS.Initialise(gpss.First_Element);
-               gpss.Delete_First;
-            end if;
-         else
-            res.chaineIRS := new T_SpeedSelector;
-            res.chaineIRS.Initialise(adms.First_Element);
-            adms.Delete_First;
-         end if;
-      else
-         res.chaineIRS := new T_SpeedSelector;
-         res.chaineIRS.Initialise(irss.First_Element);
-         irss.Delete_First;
-      end if;
-
-      next := init_rec(adms,irss,gpss);
-      if next.chaineADM /= null then
-         res.chaineADM.setSuivant(next.chaineADM);
-      end if;
-      if next.chaineIRS /= null then
-         res.chaineIRS.setSuivant(next.chaineIRS);
+      next := init_rec(l1,l2,l3);
+      if next /= null then
+         res.setSuivant(next);
       end if;
       return res;
 
@@ -66,13 +51,15 @@ package body Acpos is
 
    procedure Initialise
      (this: access T_Acpos;
-      adms: in out ADMList.Vector;
-      irss: in out IRSList.Vector;
-      gpss: in out GPSList.Vector)
+      l1: in List.Vector;
+      l2: in List.Vector;
+      l3: in List.Vector)
    is
    begin
-      this.chaines := init_rec(adms,irss,gpss);
-      this.currentChaine := this.chaines.chaineADM;
+
+      this.chaineADM := init_rec(l1.First,l2.First,l3.First);
+      this.chaineIRS := init_rec(l2.First,l1.First,l3.First);
+      this.currentChaine := this.chaineADM;
    end Initialise;
 
    --------------
@@ -89,9 +76,9 @@ package body Acpos is
    is
    begin
       if cmd = IRS_FIRST then
-         this.currentChaine := this.chaines.chaineIRS;
+         this.currentChaine := this.chaineIRS;
       else
-         this.currentChaine := this.chaines.chaineADM;
+         this.currentChaine := this.chaineADM;
       end if;
 
    end setCommand;
