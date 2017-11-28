@@ -88,6 +88,11 @@ package body Acpos is
                         cmd: T_Command)
    is
    begin
+      if cmd = IRS_FIRST then
+         this.currentChaine := this.chaines.chaineIRS;
+      else
+         this.currentChaine := this.chaines.chaineADM;
+      end if;
 
    end setCommand;
 

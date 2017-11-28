@@ -22,7 +22,7 @@ package Acpos is
    function getSpeed(this: access T_Acpos) return Float;
    
    procedure setCommand(this: access T_Acpos;
-                        cmd: T_Command);
+                        cmd: in T_Command);
    
 private
    
