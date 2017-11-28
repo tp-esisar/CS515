@@ -16,5 +16,4 @@ private
    type T_GpsAdapter is new T_AbstractVitesse with Record
       gps: access T_Gps;
    end record;
-
 end GpsAdapter;

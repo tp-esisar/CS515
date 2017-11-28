@@ -1,17 +1,9 @@
 package body GpsAdapter is
 
-   ----------------
-   -- Initialise --
-   ----------------
-
    procedure Initialise (this: in out T_GpsAdapter; gps: access T_Gps) is
    begin
       this.gps := gps;
    end Initialise;
-
-   --------------
-   -- getSpeed --
-   --------------
 
    function getSpeed (this: access T_GpsAdapter) return T_Vitesse is
       result: T_Vitesse;

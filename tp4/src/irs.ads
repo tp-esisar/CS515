@@ -8,9 +8,7 @@ package Irs is
      with Post => irsSpeed'Result >= 0.0 and irsSpeed'Result <= 900.0;
    
 private
-   
    type T_Irs is tagged record
       speed: Float;
    end record;
-
 end Irs;

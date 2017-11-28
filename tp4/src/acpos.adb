@@ -2,7 +2,6 @@ with Acpos; use Acpos.List;
 
 package body Acpos is
 
-
    function init_rec(l1c: in List.Cursor;
                      l2c: in List.Cursor;
                      l3c: in List.Cursor)
@@ -45,10 +44,6 @@ package body Acpos is
 
    end init_rec;
 
-   ----------------
-   -- Initialise --
-   ----------------
-
    procedure Initialise
      (this: access T_Acpos;
       l1: in List.Vector;
@@ -56,15 +51,10 @@ package body Acpos is
       l3: in List.Vector)
    is
    begin
-
       this.chaineADM := init_rec(l1.First,l2.First,l3.First);
       this.chaineIRS := init_rec(l2.First,l1.First,l3.First);
       this.currentChaine := this.chaineADM;
    end Initialise;
-
-   --------------
-   -- getSpeed --
-   --------------
 
    function getSpeed (this: access T_Acpos) return Float is
    begin
@@ -82,6 +72,5 @@ package body Acpos is
       end if;
 
    end setCommand;
-
 
 end Acpos;

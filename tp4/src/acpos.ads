@@ -19,13 +19,13 @@ package Acpos is
                         l2: in List.Vector;
                         l3: in List.Vector);
    
-   function getSpeed(this: access T_Acpos) return Float;
+   function getSpeed(this: access T_Acpos) return Float
+     with post => getSpeed'Result >= 0.0 and getSpeed'Result <= 800.0;
    
    procedure setCommand(this: access T_Acpos;
                         cmd: in T_Command);
    
 private
-   
    type T_Acpos is tagged record
       chaineIRS: access T_SpeedSelector;
       chaineADM: access T_SpeedSelector;
@@ -33,5 +33,3 @@ private
    end record;
    
 end Acpos;
-
---with post => getSpeed'Result >= 0.0 and getSpeed'Result <= 800.0;

@@ -17,5 +17,4 @@ private
    type T_IrsAdapter is new T_AbstractVitesse with Record
       irs: access T_Irs;
    end record;
-   
 end IrsAdapter;
