@@ -101,7 +101,7 @@ begin
 
    Put_Line("===> Test 4");
    irs2.setValue(900.0);
-   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 800.0);
 
    Put_Line("===> Test 5");
    acpos1.setCommand(IRS_FIRST);
@@ -117,7 +117,7 @@ begin
    Put_Line("===> Test 6");
    adm1.setState(100.0, False);
    irs2.setValue(850.0);
-   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 800.0);
 
    Put_Line("===> Test 7");
    acpos1.setCommand(ADM_FIRST);
@@ -137,6 +137,7 @@ begin
    end if;
 
 --   Put_Line("===> Test du contrat");
---   irs2.setValue(1000.0);
+--   adm1.setState(2000.0, True);
+--   error := error or testunit(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
 
 end Main;
