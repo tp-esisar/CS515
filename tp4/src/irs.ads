@@ -3,7 +3,8 @@ package Irs is
    type T_Irs is tagged private;
    
    procedure setValue(this: access T_Irs; v: in Float);
-   function irsSpeed(this: access T_Irs) return Float;
+   function irsSpeed(this: access T_Irs) return Float
+     with Post => irsSpeed'Result >= 0.0 and irsSpeed'Result <= 900.0;
    
 private
    

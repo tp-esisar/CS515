@@ -37,3 +37,5 @@ private
    end record;
    
 end Acpos;
+
+--with post => getSpeed'Result >= 0.0 and getSpeed'Result <= 800.0;

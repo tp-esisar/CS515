@@ -9,7 +9,9 @@ package AdmAdapter is
    
    procedure Initialise (this: in out T_AdmAdapter; adm: access T_Adm);
    
-   function getSpeed(this: access T_AdmAdapter) return T_Vitesse;
+   function getSpeed(this: access T_AdmAdapter) return T_Vitesse
+     with post => (not getSpeed'Result.status) or 
+     (getSpeed'Result.status and getSpeed'Result.value >= 0.0 and getSpeed'Result.value <= 668.2);
    
    ktsToms : constant Float := 0.514;
    
