@@ -1,17 +1,9 @@
 package body AdmAdapter is
 
-   ----------------
-   -- Initialise --
-   ----------------
-
    procedure Initialise (this: in out T_AdmAdapter; adm: access T_Adm) is
    begin
       this.adm := adm;
    end Initialise;
-
-   --------------
-   -- getSpeed --
-   --------------
 
    function getSpeed (this: access T_AdmAdapter) return T_Vitesse is
       result: T_Vitesse;
