@@ -9,6 +9,7 @@ package Acpos is
    type T_Command is (IRS_FIRST, ADM_FIRST);
    
    type T_Acpos is tagged private;
+   type T_Acpos_Access is access all T_Acpos;
    
    package GPSList is new Vectors (Natural, T_GpsAdapter_Access);
    package IRSList is new Vectors (Natural, T_IrsAdapter_Access);

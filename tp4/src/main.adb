@@ -23,8 +23,8 @@ procedure Main is
    irs2Adapter: T_IrsAdapter_Access;
    gps1Adapter: T_GpsAdapter_Access;
    gps2Adapter: T_GpsAdapter_Access;
-   acpos1: T_Acpos;
-   acpos2: T_Acpos;
+   acpos1: T_Acpos_Access;
+   acpos2: T_Acpos_Access;
    error: Boolean := False;
 begin
    Put_Line("---------- Initialisation ----------");
@@ -49,12 +49,36 @@ begin
    irs2Adapter.Initialise(irs2);
    gps1Adapter.Initialise(gps1);
    gps2Adapter.Initialise(gps2);
+   acpos1 := new T_Acpos;
+   acpos2 := new T_Acpos;
 
    --Init acpos1 et acpos2
 
    Put_Line("---------- Debut des tests ----------");
 
+   Put_Line("===> Test 1");
+   adm1.setState(True,100.0);
+   adm2.setState(True,500.0);
+   adm3.setState(True,1000.0);
+   irs1.setValue(850.0);
+   irs2.setValue(500.0);
+   gps1.setValue(950.0);
+   gps2.setValue(10.0);
+   error := error or test(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
 
+   Put_Line("===> Test 2");
+   adm1.setState(False,100.0);
+   adm2.setState(True,500.0);
+   adm3.setState(False,1000.0);
+   error := error or test(acpos1, acpos2, 500.0*0.514, 500.0*0.514);
+
+   Put_Line("===> Test 3");
+   adm2.setState(False,500.0);
+   error := error or test(acpos1, acpos2, 500.0, 500.0);
+
+   Put_Line("===> Test 4");
+   irs2.setValue(900.0);
+   error := error or test(acpos1, acpos2, 10.0, 950.0);
 
    Put_Line("---------- Resultat des tests ----------");
    if error
