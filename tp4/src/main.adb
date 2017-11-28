@@ -97,6 +97,17 @@ begin
    irs2.setValue(850.0);
    error := error or testunit(acpos1, acpos2, 10.0, 950.0);
 
+   Put_Line("===> Test 7");
+   acpos1.setCommand(ADM_FIRST);
+   adm1.setState(100.0, True);
+   adm2.setState(500.0, True);
+   adm3.setState(1000.0, True);
+   irs1.setValue(850.0);
+   irs2.setValue(500.0);
+   gps1.setValue(950.0);
+   gps2.setValue(10.0);
+   error := error or testunit(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
+
    Put_Line("---------- Resultat des tests ----------");
    if error
    then Put_Line("TESTS FAIL");
