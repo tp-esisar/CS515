@@ -1,4 +1,4 @@
-# CS 515 - TP4: Pattern Chaine de responsabilité
+# CS 515 - TP4: Pattern adaptateur, chaine de responsabilité et Liskov
 
 > Alexis BERTRAND
 >
@@ -173,7 +173,7 @@ end Vitesse;
 
 Cet adapteur permet d'utiliser un `Adm`. Lors de sa construction, il prend en paramètre un `Adm`, puis lorsque nécéssaire, demande à l'`Adm` sa valeur actuelle (en kts) puis la convertie pour pouvoir l'utiliser dans notre application (en m/s).
 
-On peut ajouter une **postcondition** pour vérifier que le status est ok, la valeur retournée est bien dans l'intervalle : 0 - 668.2 (qui correspond à 1300*0.514).
+On peut ajouter une **postcondition** pour vérifier que quand le status est ok, la valeur retournée est bien dans l'intervalle : 0 - 668.2 (qui correspond à 1300*0.514).
 
 ```Ada
 with AbstractVitesse; use AbstractVitesse;
@@ -337,7 +337,7 @@ end GpsAdapter;
 
 ### AbstractVitesse
 
-C'est une simple abstraction permettant de voir de la même manière tous les adapter des capteurs. Ils devront tous définir une fonction `getSpeed` qui permet de récupèrer leur valeur actuelle.
+C'est une simple abstraction permettant de voir de la même manière tous les adapteurs des capteurs. Ils devront tous définir une fonction `getSpeed` qui permet de récupèrer leur valeur actuelle.
 
 ```Ada
 with Vitesse; use Vitesse;
@@ -355,11 +355,11 @@ end AbstractVitesse;
 
 ### SpeedSelector
 
-SpeedSelecteur correspond aux maillons de notre chaine de responsabilité. Chaque maillon de la chain est en réalité associé à un capteur de vitesse (`AbstractVitesse`) et au maillon suivant (la construction de cette chaine est réalisé par le constructeur de `Acpos`).
+SpeedSelecteur correspond aux maillons de notre chaine de responsabilité. Chaque maillon de la chaine est en réalité associée à un capteur de vitesse (`AbstractVitesse`) et au maillon suivant (la construction de cette chaine est réalisé par le constructeur de `Acpos`).
 
 Par exemple si l'on souhaite que la priorité de selection des valeurs soit : ADM1 => ADM2 => ... => GPS1, il faut chainer les maillons dans le même ordre.
 
-Chaque maillon va récuperer la vitesse qui lui est associé, vérifier quelle soit correcte avant de la retourner, sinon il demande au prochain maillon sa valeur. Comme les GPS retournent toujours une valeur correcte, dans le pire des cas, on aura toujours au moins la valeur du GPS à retourner.
+Chaque maillon va récuperer la vitesse qui lui est associée, vérifier quelle soit correcte avant de la retourner, sinon il demande au prochain maillon sa valeur. Comme les GPS retournent toujours une valeur correcte, dans le pire des cas, on aura toujours au moins la valeur du GPS à retourner.
 
 La vitesse retourné par ce composant doit être comprise entre 0 et 800 m/s (**postcondition**).
 
@@ -576,12 +576,10 @@ end Acpos;
 with Acpos; use Acpos;
 
 package test is
-   
    function testunit (acpos1: access T_Acpos'Class; 
                   acpos2: access T_Acpos'Class; 
                   expectedSpeed1: in Float;
                   expectedSpeed2: in Float) return Boolean;
-
 end test;
 ```
 
@@ -589,10 +587,6 @@ end test;
 
 ```
 package body test is
-
-   ----------
-   -- test --
-   ----------
 
    function testunit
      (acpos1: access T_Acpos'Class;
@@ -618,11 +612,11 @@ end test;
 
 > test.adb
 
-Cette fonction de test Permet de réaliser un test unitaire, elle prends en paramètre les deux acpos et des vitesses attendues, affiche le résultat du test et retourne un booléen qui true si il y a une erreur.
+Cette fonction de test permet de réaliser un test unitaire. Elle prends en paramètre les deux acpos et des vitesses attendues, affiche le résultat du test et retourne un booléen qui vaut True si il y a une erreur.
 
 ### Fichier de test
 
-```
+```Ada
 with Ada.Text_IO; use Ada.Text_IO;
 with Adm; use Adm;
 with Irs; use Irs;
@@ -683,7 +677,6 @@ begin
    gps1Adapter.Initialise(gps1);
    gps2Adapter.Initialise(gps2);
 
-
    --Init acpos1 et acpos2
    admList.Append(T_AbstractVitesse_Access(adm1Adapter));
    admList.Append(T_AbstractVitesse_Access(adm2Adapter));
@@ -699,7 +692,6 @@ begin
    gpsList.Reverse_Elements;
    acpos2 := new T_Acpos;
    acpos2.Initialise(admList, irsList, gpsList);
-
 
 
    Put_Line("---------- Debut des tests ----------");
@@ -761,48 +753,93 @@ begin
    else Put_Line("TESTS OK");
    end if;
 
---   Put_Line("===> Test du contrat");
---   irs2.setValue(1000.0);
-
 end Main;
 ```
 
 > main.adb
 
-Ce fichier main permet d'executer les tests. Il y a une première phase d'initialisation où l'on instancie nos objets, puis une phase de tests unitares avec affichage dans le terminal ainsi que tests d'assertion (voir fonction `testunit`)
+Ce fichier main permet d'executer les tests. Il y a une première phase d'initialisation où l'on instancie nos objets, puis une phase de tests unitares avec affichage dans le terminal ainsi que tests d'assertion (voir fonction `testunit`).
 
 ### Exécution des tests
+
+```
+---------- Initialisation ----------
+---------- Debut des tests ----------
+===> Test 1
+acpos1 :  5.14000E+01/ 5.14000E+01
+acpos2 :  5.14000E+02/ 5.14000E+02
+===> Test 2
+acpos1 :  2.57000E+02/ 2.57000E+02
+acpos2 :  2.57000E+02/ 2.57000E+02
+===> Test 3
+acpos1 :  5.00000E+02/ 5.00000E+02
+acpos2 :  5.00000E+02/ 5.00000E+02
+===> Test 4
+acpos1 :  1.00000E+01/ 1.00000E+01
+acpos2 :  8.00000E+02/ 8.00000E+02
+===> Test 5
+acpos1 :  8.00000E+02/ 8.00000E+02
+acpos2 :  5.14000E+01/ 5.14000E+01
+===> Test 6
+acpos1 :  1.00000E+01/ 1.00000E+01
+acpos2 :  8.00000E+02/ 8.00000E+02
+===> Test 7
+acpos1 :  5.14000E+01/ 5.14000E+01
+acpos2 :  5.14000E+02/ 5.14000E+02
+---------- Resultat des tests ----------
+TESTS OK
+```
+
+
 
 ### Analyse
 
 #### Test 1
 
-Dans ce premier test, nous initialisons tous les capteurs avec des valeurs par défaut et les adm avec des valeurs valides et des états OK. On observe que pour chaque acpos, leur premier adm a été choisis (adm1 pour acpos1 et adm3 pour acpos2) Cela confirme en partie l'exigence no 1, les ADM sont bien choisis en premier par défaut et leur ordre est différent selon l'acpos. Ce test valide aussi l'exigence no 4, la conversion kt -> m/s est réalisé par l'adapteur.
+Dans ce premier test, nous initialisons tous les capteurs avec des valeurs par défaut et les adm avec des valeurs valides et des états OK. On observe que pour chaque acpos, leur premier adm a été choisis (adm1 pour acpos1 et adm3 pour acpos2). Cela confirme en partie l'exigence no 1, les ADM sont bien choisis en premier par défaut et leur ordre est différent selon l'acpos. Ce test valide aussi l'exigence no 4, la conversion kt -> m/s est réalisé par l'adapteur.
 
 #### Test 2
 
-L'état des adm 1 et 3 passe à KO, on observe bien que les deux acpos choisissent leur deuxième adm (adm2) Cela confirme encore un peu plus l'exigence no 1 car la gestion de la priorité semble fonctionner
+L'état des adm 1 et 3 passe à KO, on observe bien que les deux acpos choisissent leur deuxième adm (adm2). Cela confirme encore un peu plus l'exigence no 1 car la gestion de la priorité semble fonctionner.
 
 #### Test 3
 
-L'adm2 passe aussi à l'état KO, et l'irs1 possède une valeur invalide, on observe que les deux acpos utilise bien l'irs2. Cela valide l'exigence 5
+L'adm2 passe aussi à l'état KO, et l'irs1 possède une valeur invalide, on observe que les deux acpos utilisent bien l'irs2. Cela valide l'exigence 5.
 
 #### Test 4 
 
-Cette fois ci c'est au tour de l'irs2 de fournir une valeur erronée, on observe que les deux acpos passent aux gps 1 et 2, l'acpos1 utilise le gps1 et l'acpos2 utilise le gps2, on observe que le valeur de l'acpos2 est 800 alors que le gps2 indique 950, la saturation de l'exigence 6 fonctionne
+Cette fois ci c'est au tour de l'irs2 de fournir une valeur erronée, on observe que les deux acpos passent aux gps 1 et 2, l'acpos1 utilise le gps1 et l'acpos2 utilise le gps2. On observe que la valeur de l'acpos2 est 800 alors que le gps2 indique 950, la saturation de l'exigence 6 fonctionne.
 
 #### Test 5
 
-Dans ce test, l'acpos1 reçoit la commande `IRS_FIRST` et l'adm1 retourne une valeur valide. l'acpos1 ignore l'irs1 car la valeur est invalide et retourne donc celle de irs2. Cela prouve l'exigence 2 et confirme encore l'exigence 1
+Dans ce test, l'acpos1 reçoit la commande `IRS_FIRST` et l'adm1 retourne une valeur valide. l'acpos1 ignore l'irs1 car la valeur est invalide et retourne donc celle de irs2. Cela prouve l'exigence 2 et confirme encore l'exigence 1.
 
 #### Test 6
 
-Test identique au test 4, ce dernier permet de confirmer que le gps est utilisé en dernier recours même avec la commande `IRS_FIRST`
+Test identique au test 4, ce dernier permet de confirmer que le gps est utilisé en dernier recours même avec la commande `IRS_FIRST`.
 
 #### Test 7
 
-Cette fois ci, la commande `ADM_FIRST` est envoyé au acpos1 et les adm repassent OK, on observe bien que les acpos 1 et 2 utilisent respectivement les adm 1 et 2. L'exigence 2 est validée
+Cette fois ci, la commande `ADM_FIRST` est envoyé au acpos1 et les adm repassent OK, on observe bien que les acpos 1 et 2 utilisent respectivement les adm 1 et 2. L'exigence 2 est validée.
 
 #### Exigence 3
 
-L'Exigence 3 est renforcée par la programmation par contrat et ne doit pas arriver.
+L'Exigence 3 est renforcée par la programmation par contrat (voir partie `Acpos`) et ne doit pas arriver.
+
+#### Test des contrats
+
+On peut tester certains contrats avec des valeurs erronées comme par exemple :
+
+```
+Put_Line("===> Test du contrat");
+adm1.setState(2000.0, True);
+error := error or testunit(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
+```
+
+Résultat :
+
+```
+===> Test du contrat
+raised SYSTEM.ASSERTIONS.ASSERT_FAILURE : failed postcondition from adm.ads:8
+```
+
