@@ -8,7 +8,8 @@ package SpeedSelector is
    
    procedure setSuivant (this: T_SpeedSelector; next: access T_SpeedSelector);
    
-   function getSpeed(this: access T_SpeedSelector) return Float;
+   function getSpeed(this: access T_SpeedSelector) return Float
+     with post => getSpeed'Result >= 0.0 and getSpeed'Result <= 800.0;
    
 private
    type T_SpeedSelector is record

@@ -8,7 +8,9 @@ package IrsAdapter is
    
    procedure Initialise (this: in out T_IrsAdapter; irs: access T_Irs);
    
-   function getSpeed(this: access T_IrsAdapter) return T_Vitesse;
+   function getSpeed(this: access T_IrsAdapter) return T_Vitesse
+     with post => (not getSpeed'Result.status and getSpeed'Result.value > 800.0) or 
+     (getSpeed'Result.status and getSpeed'Result.value >= 0.0 and getSpeed'Result.value <= 800.0);
    
 private
    type T_IrsAdapter is new T_AbstractVitesse with Record

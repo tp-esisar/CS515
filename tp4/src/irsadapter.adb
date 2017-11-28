@@ -18,13 +18,8 @@ package body IrsAdapter is
       temp: Float;
    begin
       temp := this.irs.irsSpeed;
-      if temp <= 800.0 then
-         result.status := True;
-         result.value := temp;
-      else
-         result.status := False;
-         result.value := -1;
-      end if;
+      result.status := temp <= 800.0;
+      result.value := temp;
       return result;
    end getSpeed;
 
