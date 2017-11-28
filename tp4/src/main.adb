@@ -5,6 +5,7 @@ with Gps; use Gps;
 with AdmAdapter; use AdmAdapter;
 with IrsAdapter; use IrsAdapter;
 with GpsAdapter; use GpsAdapter;
+with Acpos; use Acpos;
 
 
 procedure Main is
@@ -18,10 +19,13 @@ procedure Main is
    adm1Adapter: T_AdmAdapter_Access;
    adm2Adapter: T_AdmAdapter_Access;
    adm3Adapter: T_AdmAdapter_Access;
-   irs1Adapter: T_IrsAdapter;
-   irs2Adapter: T_IrsAdapter;
+   irs1Adapter: T_IrsAdapter_Access;
+   irs2Adapter: T_IrsAdapter_Access;
    gps1Adapter: T_GpsAdapter_Access;
    gps2Adapter: T_GpsAdapter_Access;
+   acpos1: T_Acpos;
+   acpos2: T_Acpos;
+   error: Boolean := False;
 begin
    Put_Line("---------- Initialisation ----------");
    adm1 := new T_Adm;
@@ -32,18 +36,30 @@ begin
    gps1 := new T_Gps;
    gps2 := new T_Gps;
    adm1Adapter := new T_AdmAdapter;
-   adm1Adapter.Initialise(adm1);
    adm2Adapter := new T_AdmAdapter;
-   adm2Adapter.Initialise(adm2);
    adm3Adapter := new T_AdmAdapter;
-   adm3Adapter.Initialise(adm3);
    irs1Adapter := new T_IrsAdapter;
-   irs1Adapter.Initialise(irs1);
    irs2Adapter := new T_IrsAdapter;
-   irs2Adapter.Initialise(irs2);
    gps1Adapter := new T_GpsAdapter;
-   gps1Adapter.Initialise(gps1);
    gps2Adapter := new T_GpsAdapter;
+   adm1Adapter.Initialise(adm1);
+   adm2Adapter.Initialise(adm2);
+   adm3Adapter.Initialise(adm3);
+   irs1Adapter.Initialise(irs1);
+   irs2Adapter.Initialise(irs2);
+   gps1Adapter.Initialise(gps1);
    gps2Adapter.Initialise(gps2);
-   --  Insert code here.
+
+   --Init acpos1 et acpos2
+
+   Put_Line("---------- Debut des tests ----------");
+
+
+
+   Put_Line("---------- Resultat des tests ----------");
+   if error
+   then Put_Line("TESTS FAIL");
+   else Put_Line("TESTS OK");
+   end if;
+
 end Main;

@@ -5,7 +5,7 @@ with Vitesse; use Vitesse;
 package AdmAdapter is
    
    type T_AdmAdapter is new T_AbstractVitesse with private;
-   type T_AdmAdapter_Access is access all T_AdmAdapter; 
+   type T_AdmAdapter_Access is access all T_AdmAdapter'Class;
    
    procedure Initialise (this: in out T_AdmAdapter; adm: access T_Adm);
    

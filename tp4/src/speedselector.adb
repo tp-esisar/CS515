@@ -1,3 +1,4 @@
+with Vitesse; use Vitesse;
 package body SpeedSelector is
 
    ----------------
@@ -6,10 +7,10 @@ package body SpeedSelector is
 
    procedure Initialise
      (this: in out T_SpeedSelector;
-      vitesse: access T_AbstractVitesse)
+      vitesse: access T_AbstractVitesse'Class)
    is
    begin
-      this.vitesse := T_AbstractVitesse;
+      this.vitesse := vitesse;
    end Initialise;
 
    ----------------
@@ -17,11 +18,11 @@ package body SpeedSelector is
    ----------------
 
    procedure setSuivant
-     (this: T_SpeedSelector;
+     (this: in out T_SpeedSelector;
       next: access T_SpeedSelector)
    is
    begin
-      this.next := T_SpeedSelector;
+      this.next := next;
    end setSuivant;
 
    --------------
