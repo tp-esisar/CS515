@@ -81,10 +81,29 @@ begin
    irs2.setValue(900.0);
    error := error or testunit(acpos1, acpos2, 10.0, 950.0);
 
+   Put_Line("===> Test 5");
+   acpos1.setCommand(IRS_FIRST);
+   adm1.setState(100.0, True);
+   adm2.setState(500.0, False);
+   adm3.setState(1000.0, False);
+   irs1.setValue(850.0);
+   irs2.setValue(800.0);
+   gps1.setValue(950.0);
+   gps2.setValue(10.0);
+   error := error or testunit(acpos1, acpos2, 800.0, 100.0*0.514);
+
+   Put_Line("===> Test 6");
+   adm1.setState(100.0, False);
+   irs2.setValue(850.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
+
    Put_Line("---------- Resultat des tests ----------");
    if error
    then Put_Line("TESTS FAIL");
    else Put_Line("TESTS OK");
    end if;
+
+--   Put_Line("===> Test du contrat");
+--   irs2.setValue(1000.0);
 
 end Main;
