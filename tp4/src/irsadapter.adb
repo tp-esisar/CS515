@@ -4,23 +4,28 @@ package body IrsAdapter is
    -- Initialise --
    ----------------
 
-   procedure Initialise (this: in out T_IrsAdapter; adm: access T_Irs) is
+   procedure Initialise (this: in out T_IrsAdapter; irs: access T_Irs) is
    begin
-      --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "Initialise unimplemented");
-      raise Program_Error with "Unimplemented procedure Initialise";
+      this.irs := irs;
    end Initialise;
 
    --------------
    -- getSpeed --
    --------------
 
-   function getSpeed (this: access T_IrsAdapter) return Float is
+   function getSpeed (this: access T_IrsAdapter) return T_Vitesse is
+      result: T_Vitesse;
+      temp: Float;
    begin
-      --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "getSpeed unimplemented");
-      raise Program_Error with "Unimplemented function getSpeed";
-      return getSpeed (this => this);
+      temp := this.irs.irsSpeed;
+      if temp <= 800.0 then
+         result.status := True;
+         result.value := temp;
+      else
+         result.status := False;
+         result.value := -1;
+      end if;
+      return result;
    end getSpeed;
 
 end IrsAdapter;

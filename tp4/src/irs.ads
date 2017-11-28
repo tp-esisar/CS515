@@ -1,13 +1,13 @@
 package Irs is
 
-   type T_Irs is private;
+   type T_Irs is tagged private;
    
    procedure setValue(this: access T_Irs; v: in Float);
    function irsSpeed(this: access T_Irs) return Float;
    
 private
    
-   type T_Irs is record
+   type T_Irs is tagged record
       speed: Float;
    end record;
 

@@ -1,13 +1,14 @@
 with AbstractVitesse; use AbstractVitesse;
 with Irs; use Irs;
+with Vitesse; use Vitesse;
 
 package IrsAdapter is
 
    type T_IrsAdapter is new T_AbstractVitesse with private;
    
-   procedure Initialise (this: in out T_IrsAdapter; adm: access T_Irs);
+   procedure Initialise (this: in out T_IrsAdapter; irs: access T_Irs);
    
-   function getSpeed(this: access T_IrsAdapter) return Float;
+   function getSpeed(this: access T_IrsAdapter) return T_Vitesse;
    
 private
    type T_IrsAdapter is new T_AbstractVitesse with Record

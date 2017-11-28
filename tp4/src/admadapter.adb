@@ -6,21 +6,19 @@ package body AdmAdapter is
 
    procedure Initialise (this: in out T_AdmAdapter; adm: access T_Adm) is
    begin
-      --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "Initialise unimplemented");
-      raise Program_Error with "Unimplemented procedure Initialise";
+      this.adm := adm;
    end Initialise;
 
    --------------
    -- getSpeed --
    --------------
 
-   function getSpeed (this: access T_AdmAdapter) return Float is
+   function getSpeed (this: access T_AdmAdapter) return T_Vitesse is
+      result: T_Vitesse;
    begin
-      --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "getSpeed unimplemented");
-      raise Program_Error with "Unimplemented function getSpeed";
-      return getSpeed (this => this);
+      result.status := this.adm.getStatus;
+      result.value := this.adm.getValue * ktsToms;
+      return result;
    end getSpeed;
 
 end AdmAdapter;
