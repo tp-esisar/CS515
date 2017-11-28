@@ -4,7 +4,7 @@ package body test is
    -- test --
    ----------
 
-   function test
+   function testunit
      (acpos1: access T_Acpos'Class;
       acpos2: access T_Acpos'Class;
       expectedSpeed1: in Float;
@@ -21,6 +21,6 @@ package body test is
       return (Float'Image(expectedSpeed1) /= Float'Image(vitesse1)) or
         (Float'Image(expectedSpeed2) /= Float'Image(vitesse2));
 
-   end test;
+   end testunit;
 
 end test;

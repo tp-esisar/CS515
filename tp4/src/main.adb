@@ -6,6 +6,7 @@ with AdmAdapter; use AdmAdapter;
 with IrsAdapter; use IrsAdapter;
 with GpsAdapter; use GpsAdapter;
 with Acpos; use Acpos;
+with test; use test;
 
 
 procedure Main is
@@ -57,28 +58,28 @@ begin
    Put_Line("---------- Debut des tests ----------");
 
    Put_Line("===> Test 1");
-   adm1.setState(True,100.0);
-   adm2.setState(True,500.0);
-   adm3.setState(True,1000.0);
+   adm1.setState(100.0, True);
+   adm2.setState(500.0, True);
+   adm3.setState(1000.0, True);
    irs1.setValue(850.0);
    irs2.setValue(500.0);
    gps1.setValue(950.0);
    gps2.setValue(10.0);
-   error := error or test(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
+   error := error or testunit(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
 
    Put_Line("===> Test 2");
-   adm1.setState(False,100.0);
-   adm2.setState(True,500.0);
-   adm3.setState(False,1000.0);
-   error := error or test(acpos1, acpos2, 500.0*0.514, 500.0*0.514);
+   adm1.setState(100.0, False);
+   adm2.setState(500.0, True);
+   adm3.setState(1000.0, False);
+   error := error or testunit(acpos1, acpos2, 500.0*0.514, 500.0*0.514);
 
    Put_Line("===> Test 3");
-   adm2.setState(False,500.0);
-   error := error or test(acpos1, acpos2, 500.0, 500.0);
+   adm2.setState(500.0, False);
+   error := error or testunit(acpos1, acpos2, 500.0, 500.0);
 
    Put_Line("===> Test 4");
    irs2.setValue(900.0);
-   error := error or test(acpos1, acpos2, 10.0, 950.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
 
    Put_Line("---------- Resultat des tests ----------");
    if error
