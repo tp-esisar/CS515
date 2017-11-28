@@ -5,6 +5,7 @@ with Vitesse; use Vitesse;
 package GpsAdapter is
 
    type T_GpsAdapter is new T_AbstractVitesse with private;
+   type T_GpsAdapter_Access is access all T_GpsAdapter;
    
    procedure Initialise (this: in out T_GpsAdapter; gps: access T_Gps);
    
