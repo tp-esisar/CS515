@@ -1,67 +1,45 @@
-with Acpos; use Acpos.ADMList;
-with Acpos; use Acpos.IRSList;
-with Acpos; use Acpos.GPSList;
+with Acpos; use Acpos.List;
+
 package body Acpos is
 
 
-   function init_rec(admc: in out ADMList.Cursor;
-                     irsc: in out IRSList.Cursor;
-                     gpsc: in out GPSList.Cursor)
-                     return T_Chaines
+   function init_rec(l1c: in List.Cursor;
+                     l2c: in List.Cursor;
+                     l3c: in List.Cursor)
+                     return T_SpeedSelector_Access
    is
-      res: T_Chaines;
-      next: T_Chaines;
+      res: T_SpeedSelector_Access;
+      next: T_SpeedSelector_Access;
+      l1 : List.Cursor;
+      l2 : List.Cursor;
+      l3 : List.Cursor;
    begin
-      if admc = ADMList.No_Element then
-         if irsc = IRSList.No_Element then
-            if gpsc = GPSList.No_Element then
-               res.chaineADM := null;
+      l1 := l1c;
+      l2 := l2c;
+      l3 := l3c;
+      if l1 = No_Element then
+         if l2 = No_Element then
+            if l3 = No_Element then
+               return null;
             else
-               res.chaineADM := new T_SpeedSelector;
-               res.chaineADM.Initialise(Element(gpsc));
-               GPSList.Next(gpsc);
+               res := new T_SpeedSelector;
+               res.Initialise(Element(l3));
+               List.Next(l3);
             end if;
          else
-            res.chaineADM := new T_SpeedSelector;
-            res.chaineADM.Initialise(Element(irsc));
-            IRSList.Next(irsc);
+            res := new T_SpeedSelector;
+            res.Initialise(Element(l2));
+            List.Next(l2);
          end if;
       else
-         res.chaineADM := new T_SpeedSelector;
-         res.chaineADM.Initialise(Element(admc));
-         ADMList.Next(admc);
+         res := new T_SpeedSelector;
+         res.Initialise(Element(l1));
+         List.Next(l1);
       end if;
 
-      if irsc = IRSList.No_Element then
-         if admc = ADMList.No_Element then
-            if gpsc = GPSList.No_Element then
-               res.chaineIRS := null;
-            else
-               res.chaineIRS := new T_SpeedSelector;
-               res.chaineIRS.Initialise(Element(gpsc));
-               GPSList.Next(gpsc);
-            end if;
-         else
-            res.chaineIRS := new T_SpeedSelector;
-            res.chaineIRS.Initialise(Element(admc));
-            ADMList.Next(admc);
-         end if;
-      else
-         res.chaineIRS := new T_SpeedSelector;
-         res.chaineIRS.Initialise(Element(irsc));
-         IRSList.Next(irsc);
-      end if;
-
-
-
-      next := init_rec(admc,
-                       irsc,
-                       gpsc);
-      if next.chaineADM /= null then
-         res.chaineADM.setSuivant(next.chaineADM);
-      end if;
-      if next.chaineIRS /= null then
-         res.chaineIRS.setSuivant(next.chaineIRS);
+      next := init_rec(l1,l2,l3);
+      if next /= null then
+         res.setSuivant(next);
       end if;
       return res;
 
@@ -73,21 +51,15 @@ package body Acpos is
 
    procedure Initialise
      (this: access T_Acpos;
-      adms: in ADMList.Vector;
-      irss: in IRSList.Vector;
-      gpss: in GPSList.Vector)
+      l1: in List.Vector;
+      l2: in List.Vector;
+      l3: in List.Vector)
    is
-      temp_admc: ADMList.Cursor;
-      temp_irsc: IRSList.Cursor;
-      temp_gpsc: GPSList.Cursor;
    begin
-      temp_admc := adms.First;
-      temp_irsc := irss.First;
-      temp_gpsc := gpss.First;
-      this.chaines := init_rec(temp_admc,
-                               temp_irsc,
-                               temp_gpsc);
-      this.currentChaine := this.chaines.chaineADM;
+
+      this.chaineADM := init_rec(l1.First,l2.First,l3.First);
+      this.chaineIRS := init_rec(l2.First,l1.First,l3.First);
+      this.currentChaine := this.chaineADM;
    end Initialise;
 
    --------------
@@ -104,9 +76,9 @@ package body Acpos is
    is
    begin
       if cmd = IRS_FIRST then
-         this.currentChaine := this.chaines.chaineIRS;
+         this.currentChaine := this.chaineIRS;
       else
-         this.currentChaine := this.chaines.chaineADM;
+         this.currentChaine := this.chaineADM;
       end if;
 
    end setCommand;

@@ -6,6 +6,8 @@ with AdmAdapter; use AdmAdapter;
 with IrsAdapter; use IrsAdapter;
 with GpsAdapter; use GpsAdapter;
 with Acpos; use Acpos;
+with test; use test;
+with AbstractVitesse; use AbstractVitesse;
 
 
 procedure Main is
@@ -23,12 +25,14 @@ procedure Main is
    irs2Adapter: T_IrsAdapter_Access;
    gps1Adapter: T_GpsAdapter_Access;
    gps2Adapter: T_GpsAdapter_Access;
-   admList: Acpos.ADMList.Vector;
-   irsList: Acpos.IRSList.Vector;
-   gpsList: Acpos.GPSList.Vector;
 
-   acpos1: T_Acpos;
-   acpos2: T_Acpos;
+   admList: Acpos.List.Vector;
+   irsList: Acpos.List.Vector;
+   gpsList: Acpos.List.Vector;
+
+   acpos1: T_Acpos_Access;
+   acpos2: T_Acpos_Access;
+
    error: Boolean := False;
 begin
    Put_Line("---------- Initialisation ----------");
@@ -54,24 +58,85 @@ begin
    gps1Adapter.Initialise(gps1);
    gps2Adapter.Initialise(gps2);
 
+
    --Init acpos1 et acpos2
-   admList.Append(adm1);
-   admList.Append(adm2);
-   admList.Append(adm3);
-   irsList.Append(irs1);
-   irsList.Append(irs2);
-   gpsList.Append(gps2);
-   gpsList.Append(gps1);
+   admList.Append(T_AbstractVitesse_Access(adm1Adapter));
+   admList.Append(T_AbstractVitesse_Access(adm2Adapter));
+   admList.Append(T_AbstractVitesse_Access(adm3Adapter));
+   irsList.Append(T_AbstractVitesse_Access(irs1Adapter));
+   irsList.Append(T_AbstractVitesse_Access(irs2Adapter));
+   gpsList.Append(T_AbstractVitesse_Access(gps2Adapter));
+   gpsList.Append(T_AbstractVitesse_Access(gps1Adapter));
+   acpos1 := new T_Acpos;
+   acpos1.Initialise(admList, irsList, gpsList);
+   admList.Reverse_Elements;
+   irsList.Reverse_Elements;
+   gpsList.Reverse_Elements;
+   acpos2 := new T_Acpos;
+   acpos2.Initialise(admList, irsList, gpsList);
+
 
 
    Put_Line("---------- Debut des tests ----------");
 
+   Put_Line("===> Test 1");
+   adm1.setState(100.0, True);
+   adm2.setState(500.0, True);
+   adm3.setState(1000.0, True);
+   irs1.setValue(850.0);
+   irs2.setValue(500.0);
+   gps1.setValue(950.0);
+   gps2.setValue(10.0);
+   error := error or testunit(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
 
+   Put_Line("===> Test 2");
+   adm1.setState(100.0, False);
+   adm2.setState(500.0, True);
+   adm3.setState(1000.0, False);
+   error := error or testunit(acpos1, acpos2, 500.0*0.514, 500.0*0.514);
+
+   Put_Line("===> Test 3");
+   adm2.setState(500.0, False);
+   error := error or testunit(acpos1, acpos2, 500.0, 500.0);
+
+   Put_Line("===> Test 4");
+   irs2.setValue(900.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
+
+   Put_Line("===> Test 5");
+   acpos1.setCommand(IRS_FIRST);
+   adm1.setState(100.0, True);
+   adm2.setState(500.0, False);
+   adm3.setState(1000.0, False);
+   irs1.setValue(850.0);
+   irs2.setValue(800.0);
+   gps1.setValue(950.0);
+   gps2.setValue(10.0);
+   error := error or testunit(acpos1, acpos2, 800.0, 100.0*0.514);
+
+   Put_Line("===> Test 6");
+   adm1.setState(100.0, False);
+   irs2.setValue(850.0);
+   error := error or testunit(acpos1, acpos2, 10.0, 950.0);
+
+   Put_Line("===> Test 7");
+   acpos1.setCommand(ADM_FIRST);
+   adm1.setState(100.0, True);
+   adm2.setState(500.0, True);
+   adm3.setState(1000.0, True);
+   irs1.setValue(850.0);
+   irs2.setValue(500.0);
+   gps1.setValue(950.0);
+   gps2.setValue(10.0);
+   error := error or testunit(acpos1, acpos2, 100.0*0.514, 1000.0*0.514);
 
    Put_Line("---------- Resultat des tests ----------");
    if error
    then Put_Line("TESTS FAIL");
    else Put_Line("TESTS OK");
    end if;
+
+--   Put_Line("===> Test du contrat");
+--   irs2.setValue(1000.0);
 
 end Main;
